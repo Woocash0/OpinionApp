@@ -1,0 +1,3 @@
+UPDATE USER
+SET roles = '["ROLE_USER"]' 
+WHERE id = 17;
