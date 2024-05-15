@@ -40,12 +40,12 @@ function LoginForm() {
     try {
       console.log(formData);
       const response = await axios.post('http://localhost:8000/login', formData);
-signIn({
-  token: response.data.token,
-  expiresIn: 3600,
-  tokenType: "Bearer",
-  authState: { email: formData.email },
-});
+      signIn({
+        token: response.data.token,
+        expiresIn: 3600,
+        tokenType: "Bearer",
+        authState: { email: formData.email },
+      });
       console.log('Login successful:', response.data);
 
       if (response.status === 200) {
