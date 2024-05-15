@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -34,6 +36,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?UserDetails $idUserDetails = null;
+
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Opinion::class, orphanRemoval: true)]
+    private Collection $opinions;
+
+    public function __construct()
+    {
+        $this->opinions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -113,6 +123,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIdUserDetails(?UserDetails $idUserDetails): static
     {
         $this->idUserDetails = $idUserDetails;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Opinion>
+     */
+    public function getOpinions(): Collection
+    {
+        return $this->opinions;
+    }
+
+    public function addOpinion(Opinion $opinion): static
+    {
+        if (!$this->opinions->contains($opinion)) {
+            $this->opinions->add($opinion);
+            $opinion->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOpinion(Opinion $opinion): static
+    {
+        if ($this->opinions->removeElement($opinion)) {
+            // set the owning side to null (unless already changed)
+            if ($opinion->getCreatedBy() === $this) {
+                $opinion->setCreatedBy(null);
+            }
+        }
 
         return $this;
     }

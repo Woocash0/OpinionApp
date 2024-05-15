@@ -43,6 +43,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/warranties, roles: PUBLIC_ACCESS }
+        - { path: ^/categories, roles: PUBLIC_ACCESS }
         - { path: ^/account, roles: ROLE_USER }
         - { path: ^/add_warranty, roles: ROLE_USER }
         - { path: ^/edit_warranty, roles: ROLE_USER }
