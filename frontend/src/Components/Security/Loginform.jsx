@@ -4,6 +4,7 @@ import logo from "../images/logo.svg"
 import queryString from 'query-string';
 import axios from 'axios';
 import { useSignIn } from "react-auth-kit";
+import {toast} from "react-hot-toast";
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,6 @@ function LoginForm() {
   const location = useLocation();
   const { success } = queryString.parse(location.search); // Pobiera parametr 'success'
   const [showSuccess, setShowSuccess] = useState(success === 'true');
-  const successRegister = "Rejestracja przebiegła pomyślnie!"
 
 
   useEffect(() => {
@@ -60,6 +60,7 @@ function LoginForm() {
         
         setShowSuccess(true);
         setSuccessMessage('Zalogowano pomyślnie!');
+        toast.success(response.data.message);
 
         setTimeout(() => {
           navigate('/'); 
@@ -68,9 +69,11 @@ function LoginForm() {
     } catch (err) {
     console.error('Login error:', err); // Log pełnego błędu do debugowania
 
+
     // Sprawdź, czy `response` i `response.data` istnieją przed uzyskaniem dostępu
     if (err.response && err.response.data) {
-      setError(`Błąd podczas logowania: ${err.response.data.message || 'Nieznany błąd'}`);
+      setError(`Błąd podczas logowania: ${err.response.data.error || 'Nieznany błąd'}`);
+      toast.error(err.response.data.error);
     } else {
       setError('Błąd podczas logowania. Sprawdź swoje dane.'); // Ogólny komunikat błędu
     }
@@ -88,7 +91,6 @@ function LoginForm() {
           <div className="messages">
           {showSuccess  && (
             <div className="success-message">
-              <p>{successRegister}</p>
               <p>{successMessage}</p>
             </div>)}
             {error && <div className="alert alert-danger">{error}</div>}

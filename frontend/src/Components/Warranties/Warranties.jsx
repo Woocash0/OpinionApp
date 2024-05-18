@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Używamy do linków React
 import { format } from 'date-fns'; // Używamy do formatowania daty
+import AddButton from '../images/add_button.svg';
 
 const Warranties = ({ warranties }) => {
   return (
     <div>
       {/* Dodaj przycisk do dodawania gwarancji */}
       <Link to="/add_warranty" className="add_button">
-        <img src="/img/add_button.svg" alt="Add Warranty" />
+        <img src={AddButton} alt="Add Warranty" />
       </Link>
 
       {/* Nagłówek z liczbą gwarancji */}

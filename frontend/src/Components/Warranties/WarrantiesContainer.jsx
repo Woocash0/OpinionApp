@@ -3,6 +3,8 @@ import axios from 'axios'; // Używamy axios do wysyłania żądań HTTP
 import Warranties from './Warranties'; // Importujemy komponent Warranties
 import { useNavigate } from 'react-router-dom'; // Narzędzie do przekierowania
 import { RequireAuth, useAuthHeader } from "react-auth-kit";
+import { motion } from "framer-motion";
+
 
 const WarrantiesContainer = () => {
   const authHeader = useAuthHeader();
@@ -42,7 +44,14 @@ const WarrantiesContainer = () => {
     return <div>{error}</div>; // Komunikat w przypadku błędu
   }
 
-  return <Warranties warranties={warranties} />; // Przekazujemy dane do komponentu Warranties
+  return (
+  <motion.div
+    initial={{ opacity: 0}}
+    animate={{ opacity: 1}}
+    exit={{ opacity: 0}}
+    transition={{ duration: 1.3}}>
+  <Warranties warranties={warranties} />
+  </motion.div>); // Przekazujemy dane do komponentu Warranties
 };
 
 export default WarrantiesContainer;

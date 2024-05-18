@@ -1,42 +1,58 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Używamy do przekierowania
 import { useEffect, useState } from 'react';
+import { useSignOut } from 'react-auth-kit';
+import axios from 'axios';
+import { motion } from "framer-motion";
+import {toast} from "react-hot-toast";
 
 const Account = () => {
+  const signOut = useSignOut();
   const [userDetails, setUserDetails] = useState(null); // Inicjalizujemy stan danych użytkownika
   const navigate = useNavigate(); // Inicjalizujemy narzędzie do przekierowania
 
-
+  useEffect(() => {
+    const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+    const authToken = cookies.find(cookie => cookie[0] === '_auth');
+    // Pobranie danych o kategoriach z serwera
+    axios.get('http://localhost:8000/account', {
+      headers: {
+        'Authorization': `Bearer ${authToken[1]}`
+      }
+    })
+        .then(response => {
+            console.log(response);
+            setUserDetails(response.data.user);
+        })
+        .catch(error => {
+            console.log(error);
+            console.log("No user data found. Redirecting to login.");
+            toast.error(error.response.data.message);
+            navigate('/loginform');
+        });
+}, [navigate]);
    // Pobieramy dane użytkownika z localStorage podczas inicjalizacji komponentu
-   useEffect(() => {
-    const userDataJson = localStorage.getItem('user_data'); // Pobierz dane z localStorage
-    if (userDataJson) {
-      const userData = JSON.parse(userDataJson); // Przekształć na obiekt
-      setUserDetails(userData); // Ustaw dane użytkownika w stanie
-    } else {
-      console.log("No user data found. Redirecting to login.");
-      navigate('/loginform'); // Jeśli nie ma danych, przekieruj do logowania
-    }
-  }, [navigate]); // Zależność od navigate, by unikać błędów
+   
   // Lokalna metoda do wylogowania
   const onLogout = (e) => {
     e.preventDefault(); // Zapobiega domyślnemu działaniu formularza
-    
-    // Usuń token JWT z localStorage lub sessionStorage
-    localStorage.removeItem('jwt_token'); // Możesz też użyć sessionStorage
-    localStorage.removeItem('user_data');
-    
-    // Przekieruj do strony logowania lub innej
-    navigate('/loginform'); // Przekieruj do logowania po wylogowaniu
+    signOut();
+    navigate('/loginform');
+    toast.success("Logout successful"); // Przekieruj do logowania po wylogowaniu
   };
 
   if (!userDetails) {
-    // Jeśli dane użytkownika nie są załadowane, zwróć coś innego (np. loader)
     return <div>Loading...</div>;
   }
 
   return (
+    <motion.div
+    initial={{ opacity: 0}}
+    animate={{ opacity: 1}}
+    exit={{ opacity: 0}}
+    transition={{ duration: 1.3}}>
     <div>
+
       <header>My account</header>
       <div id="info">
         <div className="detail_container">
@@ -70,7 +86,7 @@ const Account = () => {
         </div>
       </div>
     </div>
-  );
+    </motion.div>);
 };
 
 export default Account;

@@ -41,19 +41,19 @@ class SecurityController extends AbstractController
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
-            return new JsonResponse(['error' => 'User not found'], 404); // 404 Not Found
+            return new JsonResponse(['error' => '404 - User not found'], 404); // 404 Not Found
         }
 
         // Sprawdź hasło (używając UserPasswordHasherInterface)
         if (!$passwordHasher->isPasswordValid($user, $password)) {
-            return new JsonResponse(['error' => 'Invalid password'], 401);
+            return new JsonResponse(['error' => '401 - Invalid password'], 401);
     }
 
         // Wygeneruj token JWT
         try {
             $jwtToken = $this->jwtManager->create($user);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Error generating token'], 500);
+            return new JsonResponse(['error' => '500 - Error generating token'], 500);
         }
 
         $userDetails = $user->getIdUserDetails();

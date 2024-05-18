@@ -10,6 +10,8 @@ const Navbar = () => {
       <ul>
         <NavItem icon={faHouse} link="/" text="Home" />
         <NavItem icon={faHouse} link="warranties" text="Warranties" />
+        <NavItem icon={faHouse} link="add_product" text="Add Product" />
+        <NavItem icon={faHouse} link="products" text="Products" />
         <SearchNavItem />
         <NavItem icon={faBoxArchive} link="archive" text="Archive" />
         <NavItem icon={faUser} link="account" text="My account" />

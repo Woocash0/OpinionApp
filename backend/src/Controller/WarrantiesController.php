@@ -2,31 +2,35 @@
 
 namespace App\Controller;
 
-use App\Entity\Warranty;
 use App\Entity\User;
 
-use App\Form\WarrantyFormType;
-use App\Repository\WarrantyRepository;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManager;
-use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
+use App\Entity\Warranty;
 use PhpParser\Node\Expr\New_;
+use App\Form\WarrantyFormType;
+use App\Repository\UserRepository;
+use App\Repository\WarrantyRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManager;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
+
+
 
 
 
@@ -49,46 +53,50 @@ class WarrantiesController extends AbstractController
         $this->jwtEncoder = $jwtEncoder;
     }
 
+    private function authenticateToken($request)
+    {
+        $tokenExtractor = new AuthorizationHeaderTokenExtractor('Bearer', 'Authorization');
+        $tokenString = $tokenExtractor->extract($request);
+
+        try {
+            $decodedToken = $this->jwtEncoder->decode($tokenString);
+            $currentTime = time();
+            if ($decodedToken['exp'] < $currentTime) {
+                throw new AccessDeniedException('Token has expired.');
+            }
+            $email = $decodedToken['email'];
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+            if (!$user) {
+                throw new AccessDeniedException('User not found.');
+            }
+            return $user;
+        } catch (JWTDecodeFailureException $e) {
+            throw new BadCredentialsException('Invalid JWT token.');
+        }
+    }
+
 
     #[Route('/warranties', methods:['GET'])]
     public function index(Request $request): JsonResponse
     {
-        $tokenExtractor = new AuthorizationHeaderTokenExtractor(
-            'Bearer',
-            'Authorization'
-        );
-        $tokenString = $tokenExtractor->extract($request);
-
         try {
-            // Zdekoduj token JWT
-            $decodedToken = $this->jwtEncoder->decode($tokenString);
-
-            // Sprawdź czy token jest przedawniony
-            $currentTime = time();
-            if ($decodedToken['exp'] < $currentTime) {
-                // Token jest przedawniony, zwróć JSON z odpowiednią wiadomością
-                return new JsonResponse(['message' => 'Sesja wygasła. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
-            }
-            $email = $decodedToken['email'];
-            // Token jest aktywny, sprawdź czy istnieje użytkownik o podanym adresie e-mail
-            $user = $this->userRepository->findOneBy(['email' => $email]);
-
-            if (!$user) {
-                throw new CustomUserMessageAuthenticationException('Użytkownik o podanym adresie e-mail nie istnieje.');
-            }
-
-        } catch (JWTDecodeFailureException $e) {
+            // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
+            $user = $this->authenticateToken($request);
+    
+            // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie
+            return new JsonResponse([
+                'message' => "success", 
+                'email' => $user->getEmail(), 
+                'user' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                ],
+            ]);
+        } catch (BadCredentialsException $e) {
             return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
+        } catch (AccessDeniedException $e) {
+            return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
         }
-
-        return new JsonResponse([
-            'message' => "success", 
-            'email' => $email, 
-            'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getUserIdentifier(),
-            ],
-        ]);
     }
 
 
@@ -304,16 +312,29 @@ class WarrantiesController extends AbstractController
            'archives' => $expiredWarranties
             ]);
 }
-
-    #[Route('/account', name: 'account')]
-    public function showAccount(): Response{
-    
-            $user = $this->getUser();
-            $userDetails = $user->getIdUserDetails();
-            
-            return $this->render('/views/account/account.html.twig', [
-            'userDetails' => $userDetails,
-        ]);
-    }
 */
+    #[Route('/account', name: 'account')]
+    public function showAccount(Request $request): JsonResponse{
+            try {
+                // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
+                $user = $this->authenticateToken($request);
+                $userDetails = $user->getIdUserDetails();
+        
+                // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie
+                return new JsonResponse([
+                    'message' => "success", 
+                    'user' => [
+                        'id' => $user->getId(),
+                        'email' => $user->getEmail(),
+                        'name' => $userDetails->getName(),
+                        'surname' => $userDetails->getSurname(),
+                    ],
+                ]);
+            } catch (BadCredentialsException $e) {
+                return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
+            } catch (AccessDeniedException $e) {
+                return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
+            }
+    }
+
 }
