@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import "./categoryTree.css";
+
 
 const Category = ({ category, onClick }) => (
-    <li key={category.id} onClick={onClick}>
+    <li key={category.id} onClick={onClick} >
         {category.name}
     </li>
 );
@@ -14,7 +16,7 @@ const SubCategory = ({ category, activeCategoryId, setActiveCategoryId }) => (
                 <button className="close" onClick={() => setActiveCategoryId(null)}>Zamknij</button>
                 <ul>
                     {category.children.map(child => (
-                        <li key={child.id}>{child.name}</li>
+                        <li key={child.id}>{child.name} </li>
                     ))}
                 </ul>
             </>
@@ -26,16 +28,20 @@ const ThirdLevelCategory = ({ category }) => (
     <div key={`third-cat-${category.id}`} className="third-level-category">
         <ul>
             {category.children.map(grandchild => (
-                <li key={grandchild.id}>{grandchild.name}</li>
+                <li key={grandchild.id}>{grandchild.name} </li>
             ))}
         </ul>
     </div>
 );
 
-const CategoryTree = () => {
+const CategoryTree = ({ onSelectCategory }) => {
     const [rootCategories, setRootCategories] = useState([]);
     const [activeCategoryId, setActiveCategoryId] = useState(null);
     const [activeSubCategoryId, setActiveSubCategoryId] = useState(null);
+
+    const handleClick = (category) => {
+        onSelectCategory(category);
+      };
 
     useEffect(() => {
         // Pobranie danych o kategoriach z serwera
@@ -50,18 +56,19 @@ const CategoryTree = () => {
     }, []); // Pusta tablica jako drugi argument, aby efekt został uruchomiony tylko raz po załadowaniu komponentu
 
     const toggleMainCategory = (categoryId) => {
+        handleClick(categoryId);
         setActiveCategoryId(activeCategoryId === categoryId ? null : categoryId);
         setActiveSubCategoryId(null); // Zresetuj wybrany trzeci poziom zagnieżdżenia
     };
 
     const toggleSubCategory = (categoryId) => {
+        handleClick(categoryId);
         setActiveSubCategoryId(activeSubCategoryId === categoryId ? null : categoryId);
     };
 
     return (
-        <div>
-            <h1>Drzewo Kategorii</h1>
-            <div className="container">
+        <>
+            <div className="category-container">
                 <div className="main-categories">
                     <ul>
                         {rootCategories.map(category => (
@@ -93,7 +100,7 @@ const CategoryTree = () => {
                             {activeCategoryId === category.id && category.children.map(child => (
                                 <div key={`third-cat-${child.id}`} className={`third-level-category ${activeSubCategoryId === child.id ? 'active' : ''}`}>
                                     {activeSubCategoryId === child.id && (
-                                        <ThirdLevelCategory category={child} />
+                                        <ThirdLevelCategory category={child}/>
                                     )}
                                 </div>
                             ))}
@@ -101,7 +108,7 @@ const CategoryTree = () => {
                     ))}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faMagnifyingGlass, faBoxArchive, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faMagnifyingGlass, faBoxArchive, faUser, faTags, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../images/logo_color.svg';
 
 const Navbar = () => {
@@ -10,8 +10,8 @@ const Navbar = () => {
       <ul>
         <NavItem icon={faHouse} link="/" text="Home" />
         <NavItem icon={faHouse} link="warranties" text="Warranties" />
-        <NavItem icon={faHouse} link="add_product" text="Add Product" />
-        <NavItem icon={faHouse} link="products" text="Products" />
+        <NavItem icon={faSquarePlus} link="add_product" text="Add Product" />
+        <NavItem icon={faTags} link="products" text="Products" />
         <SearchNavItem />
         <NavItem icon={faBoxArchive} link="archive" text="Archive" />
         <NavItem icon={faUser} link="account" text="My account" />
@@ -26,7 +26,7 @@ const NavItem = ({ icon, link, text }) => {
       <a href={link} className="button">
         <FontAwesomeIcon icon={icon} className="steady" />
         <FontAwesomeIcon icon={icon} bounce className="animated" />
-        {text}
+        <span className="nav-text">{text}</span>
       </a>
     </li>
   );
@@ -35,10 +35,12 @@ const NavItem = ({ icon, link, text }) => {
 const SearchNavItem = () => {
   return (
     <li id="search_block">
+      <a href="#" className="button" id="search_button">
       <FontAwesomeIcon icon={faMagnifyingGlass} className="steady" />
       <FontAwesomeIcon icon={faMagnifyingGlass} bounce className="animated" />
-      <a href="#" className="button" id="search_button">Search</a>
+      <span className="nav-text">Search</span>
       <input id="searchbar" type="text" placeholder="search" style={{ display: 'none' }} />
+      </a>
     </li>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate  } from 'react-router-dom';
 import logo from "../images/logo.svg"
 import axios from 'axios';
+import {toast} from "react-hot-toast";
 
 function RegistrationForm() {
   const [name, setName] = useState('');
@@ -11,7 +12,6 @@ function RegistrationForm() {
   const [confirmedPassword, setConfirmedPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState([]);
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,14 +35,17 @@ function RegistrationForm() {
       console.log(response.data); 
 
     if (response.data.success) {
+      toast.success("Rejestracja przebiegła pomyślnie!");
       navigate('/loginform?success=true', {
         state: { successMessage: 'Rejestracja przebiegła pomyślnie!' },
       });
     } else {
       setFieldErrors(response.data.errors || []);
+      toast.error(response.data.errors);
     }
   } catch (error) {
-    setFieldErrors(['Wystąpił błąd podczas rejestracji.']);
+    setFieldErrors(error.response.data.errors || []);
+    toast.error(error.response.data.errors);
   }
 
 

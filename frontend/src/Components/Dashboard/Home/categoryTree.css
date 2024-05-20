@@ -1,0 +1,32 @@
+.category-container{
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    
+}
+
+.main-categories ,
+.sub-categories  ,
+.third-level-categories {
+    border-bottom: 1px solid #261132;
+}
+
+.main-categories ul ,
+.sub-categories div  ,
+.third-level-categories div div div  {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-evenly;  
+}
+
+.main-categories ul li,
+.sub-categories div div li ,
+.third-level-categories div div div li {
+    color: white;
+    border: 2px solid #261132;
+    border-radius: 2dvb;
+    font-size: 1.5vh;
+    padding: 15px;
+    margin: 0;
+    letter-spacing: 2px;
+}

@@ -5,6 +5,7 @@ import { useSignOut } from 'react-auth-kit';
 import axios from 'axios';
 import { motion } from "framer-motion";
 import {toast} from "react-hot-toast";
+import Loading from '../../Loading'
 
 const Account = () => {
   const signOut = useSignOut();
@@ -28,6 +29,7 @@ const Account = () => {
             console.log(error);
             console.log("No user data found. Redirecting to login.");
             toast.error(error.response.data.message);
+            signOut();
             navigate('/loginform');
         });
 }, [navigate]);
@@ -42,7 +44,7 @@ const Account = () => {
   };
 
   if (!userDetails) {
-    return <div>Loading...</div>;
+    return <Loading />
   }
 
   return (

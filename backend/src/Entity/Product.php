@@ -32,6 +32,12 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Opinion::class, orphanRemoval: true)]
     private Collection $opinions;
 
+    #[ORM\Column(length: 255)]
+    private ?string $barcode = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $producer = null;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
@@ -116,6 +122,30 @@ class Product
                 $opinion->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBarcode(): ?string
+    {
+        return $this->barcode;
+    }
+
+    public function setBarcode(string $barcode): static
+    {
+        $this->barcode = $barcode;
+
+        return $this;
+    }
+
+    public function getProducer(): ?string
+    {
+        return $this->producer;
+    }
+
+    public function setProducer(string $producer): static
+    {
+        $this->producer = $producer;
 
         return $this;
     }

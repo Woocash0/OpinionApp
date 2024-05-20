@@ -1,0 +1,34 @@
+.detail_container input,
+.detail_container textarea,
+.detail_container select{
+    color: #261132 !important;
+}
+
+#addButton{
+    margin: 2em 1em 1em 1em;
+    padding: 0px;
+    max-width: 40em;
+    background: #076478;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    color: white;
+    line-height: 4.5em;
+    letter-spacing: 0.25em;
+    font-family: "Inter";
+    border: none;
+    width: 10% !important;
+}
+
+.detail_container textarea{
+    width: 80%;
+    height: 100%;
+    border: 0.5px solid #ffffff;
+    border-radius: 25px;
+    color: white;
+    margin: auto;
+    margin-bottom: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 3px;
+}

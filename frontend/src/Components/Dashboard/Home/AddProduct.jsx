@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import "./addProduct.css";
 
 function AddProduct() {
     const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ function AddProduct() {
         subcategory_id: '',
         subsubcategory_id: '',
         product_name: '',
+        producer: '',
+        barcode: '',
         description: '',
         image: null
     });
@@ -71,8 +74,14 @@ function AddProduct() {
         for (let [key, value] of formDataToSend.entries()) {
             console.log(key, value);
         }
+        const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+        const authToken = cookies.find(cookie => cookie[0] === '_auth');
 
-        axios.post('http://localhost:8000/add_product', formDataToSend)
+        axios.post('http://localhost:8000/add_product', formDataToSend, {
+            headers: {
+              'Authorization': `Bearer ${authToken[1]}`
+            }
+          })
         .then(response => {
             console.log('Product added successfully:', response.data);
         })
@@ -86,7 +95,7 @@ function AddProduct() {
     };
 
     return (
-        <div>
+        <>
             <header>Add Product</header>
             <form onSubmit={handleSubmit}>
                 <div id="info">
@@ -126,27 +135,25 @@ function AddProduct() {
                         <div className="detail_name">Product Name</div>
                     </div>
                     <div className="detail_container">
-                        <textarea name="description" className="detail" value={formData.description} onChange={handleChange} placeholder="Description"></textarea>
+                        <input type="text" name="producer" className="detail" value={formData.producer} onChange={handleChange} placeholder="Producer" />
+                        <div className="detail_name">Producer</div>
+                    </div>
+                    <div className="detail_container">
+                        <textarea name="description" className="detailTextArea" value={formData.description} onChange={handleChange} placeholder="Description"></textarea>
                         <div className="detail_name">Description</div>
                     </div>
                     <div className="detail_container">
                         <input type="file" name="image" className="detail" onChange={handleFileChange} />
                         <div className="detail_name">Image</div>
                     </div>
-
                     <div className="detail_container">
-                        <button type="submit" id="sign">ADD</button>
+                        <input type="text" name="barcode" className="detail" value={formData.barcode} onChange={handleChange} placeholder="EAN/GTIN" />
+                        <div className="detail_name">EAN/GTIN</div>
                     </div>
+                    <button type="submit" id="addButton">ADD</button>
                 </div>
             </form>
-            <div className="messages">
-                <ul>
-                    {fieldErrors.map((error, index) => (
-                        <li key={index}>{error}</li>
-                    ))}
-                </ul>
-            </div>
-        </div>
+        </>
     );
 }
 

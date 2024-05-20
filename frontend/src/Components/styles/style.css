@@ -84,7 +84,14 @@ input::placeholder {
   font-size: 16px;
   line-height: 19px;
 }
-input, select {
+select::placeholder {
+  color: yellow;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+}
+input, select, textarea {
   margin: 2em 1em 1em 3em;
   padding: 0px;
   max-width: 40em;
@@ -99,6 +106,7 @@ input, select {
   text-align: center;
 }
 
+
 #sign {
   margin: 2em 1em 1em 3em;
   padding: 0px;
@@ -111,6 +119,12 @@ input, select {
   letter-spacing: 0.25em;
   font-family: "Inter";
   border: none;
+}
+#info button{
+  width: 40%;
+}
+.detail_container textarea{
+  height: 150%;
 }
 
 #sign:hover {
@@ -235,7 +249,25 @@ i#steady {
   height: 30px;
   color: #261132;
 }
+.steady{
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  color: #261132;
+}
 i#animated {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font-size: 1em;
+  width: 30px;
+  height: 30px;
+  color: #261132;
+}
+.animated{
   position: absolute;
   display: none;
   top: 0;
@@ -261,6 +293,30 @@ li:hover i#animated,
 .delete:hover i#animated,
 .location:hover i#animated,
 .exit:hover i#animated {
+  display: unset;
+}
+.button, #search_block {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.steady {
+  display: inline-block;
+}
+
+.animated {
+  display: none;
+  position: absolute;
+}
+
+.button:hover .steady,
+#search_block:hover .steady {
+  color: transparent;
+}
+
+.button:hover .animated,
+#search_block:hover .animated {
   display: unset;
 }
 
@@ -293,6 +349,10 @@ li {
   li:hover i#steady {
     color: #261132;
   }
+  .nav-text {
+    display: none;
+  }
+  
 }
 
 .no-valid {

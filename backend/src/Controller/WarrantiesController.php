@@ -30,7 +30,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 
-
+use App\Service\TokenAuthenticator;
 
 
 
@@ -42,8 +42,9 @@ class WarrantiesController extends AbstractController
     private $jwtManager;
     private $tokenStorage;
     private $jwtEncoder;
+    private $tokenAuthenticator;
 
-    public function __construct(WarrantyRepository $warrantyRepository, UserRepository $userRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder)
+    public function __construct(WarrantyRepository $warrantyRepository, UserRepository $userRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder, TokenAuthenticator $tokenAuthenticator)
     {
         $this->warrantyRepository = $warrantyRepository;
         $this->userRepository = $userRepository;
@@ -51,28 +52,7 @@ class WarrantiesController extends AbstractController
         $this->jwtManager = $jwtManager;
         $this->tokenStorage = $tokenStorage;
         $this->jwtEncoder = $jwtEncoder;
-    }
-
-    private function authenticateToken($request)
-    {
-        $tokenExtractor = new AuthorizationHeaderTokenExtractor('Bearer', 'Authorization');
-        $tokenString = $tokenExtractor->extract($request);
-
-        try {
-            $decodedToken = $this->jwtEncoder->decode($tokenString);
-            $currentTime = time();
-            if ($decodedToken['exp'] < $currentTime) {
-                throw new AccessDeniedException('Token has expired.');
-            }
-            $email = $decodedToken['email'];
-            $user = $this->userRepository->findOneBy(['email' => $email]);
-            if (!$user) {
-                throw new AccessDeniedException('User not found.');
-            }
-            return $user;
-        } catch (JWTDecodeFailureException $e) {
-            throw new BadCredentialsException('Invalid JWT token.');
-        }
+        $this->tokenAuthenticator = $tokenAuthenticator;
     }
 
 
@@ -81,7 +61,7 @@ class WarrantiesController extends AbstractController
     {
         try {
             // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
-            $user = $this->authenticateToken($request);
+            $user = $this->tokenAuthenticator->authenticateToken($request);
     
             // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie
             return new JsonResponse([
@@ -317,7 +297,7 @@ class WarrantiesController extends AbstractController
     public function showAccount(Request $request): JsonResponse{
             try {
                 // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
-                $user = $this->authenticateToken($request);
+                $user = $this->tokenAuthenticator->authenticateToken($request);
                 $userDetails = $user->getIdUserDetails();
         
                 // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie

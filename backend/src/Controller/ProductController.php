@@ -42,6 +42,8 @@ class ProductController extends AbstractController
     $product = new Product();
     $product->setCategory($em->getRepository(Category::class)->find($data['category_id']));
     $product->setProductName($data['product_name']);
+    $product->setProducer($data['producer']);
+    $product->setBarcode($data['barcode']);
     $product->setDescription($data['description']);
     $product->setImage($data['image']);
 

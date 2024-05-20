@@ -4,10 +4,13 @@ import Warranties from './Warranties'; // Importujemy komponent Warranties
 import { useNavigate } from 'react-router-dom'; // Narzędzie do przekierowania
 import { RequireAuth, useAuthHeader } from "react-auth-kit";
 import { motion } from "framer-motion";
-
+import {toast} from "react-hot-toast";
+import { useSignOut } from 'react-auth-kit';
+import Loading from '../Loading'
 
 const WarrantiesContainer = () => {
   const authHeader = useAuthHeader();
+  const signOut = useSignOut();
   const [warranties, setWarranties] = useState(null); // Inicjalizujemy stan jako null
   const [loading, setLoading] = useState(true); // Flaga ładowania
   const [error, setError] = useState(null); // Flaga błędu
@@ -33,11 +36,12 @@ const WarrantiesContainer = () => {
         console.error(err); // Wyświetl błąd w konsoli
         setError('Failed to load warranties.'); // Ustaw komunikat błędu
         setLoading(false); // Ustaw flagę ładowania na false
+        toast.error(err.response.data.message);
       });
   }, [authHeader]); // Upewnij się, że useEffect uruchamia się tylko raz (przy montażu)
 
   if (loading) {
-    return <div>Loading warranties...</div>; // Komunikat podczas ładowania
+    return <Loading /> // Komunikat podczas ładowania
   }
 
   if (error) {

@@ -74,8 +74,6 @@ function LoginForm() {
     if (err.response && err.response.data) {
       setError(`Błąd podczas logowania: ${err.response.data.error || 'Nieznany błąd'}`);
       toast.error(err.response.data.error);
-    } else {
-      setError('Błąd podczas logowania. Sprawdź swoje dane.'); // Ogólny komunikat błędu
     }
   }
   };
