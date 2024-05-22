@@ -1,6 +1,6 @@
 main {
   overflow: auto;
-  width: 80vw;
+  width: 85vw;
   height: 100%;
   background: linear-gradient(180deg, #076478 50%, #000000 100%);
   display: flex;

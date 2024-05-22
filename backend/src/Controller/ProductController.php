@@ -12,10 +12,37 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 
 class ProductController extends AbstractController
 {
+    #[Route('/products', name: 'get_products', methods: ['GET'])]
+    public function getProducts(EntityManagerInterface $em): JsonResponse
+    {
+        $products = $em->getRepository(Product::class)->findAll();
+    
+        $productData = [];
+
+        foreach ($products as $product) {
+            $productData[] = [
+                'id' => $product->getId(),
+                'productName' => $product->getProductName(),
+                'description' => $product->getDescription(),
+                'image' => $product->getImage(),
+                'categoryId' =>$product->getCategory()->getId(),
+                'categoryName' =>$product->getCategory()->getCategoryName(),
+                'opinions' => $product->getOpinions(),
+                'barcode' => $product->getBarcode(),
+                'producer' => $product->getProducer()
+            ];
+        }
+
+        return new JsonResponse($productData);
+    }
+    
+    
+    
     #[Route('/add_product', name: 'add_product', methods: ['POST'])]
     public function addProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
@@ -23,7 +50,25 @@ class ProductController extends AbstractController
         $file = $request->files->get('image');
 
         // Jeśli nie wybrano obrazka, ustaw domyślną ścieżkę
-        if (!$file) {
+        if($file){
+            $newFileName = uniqid() . '.' . $file->guessExtension();
+
+            try{
+                /*$file->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads',
+                    $newFileName
+                );
+                */
+                $file->move(
+                    $this->getParameter('kernel.project_dir') . '../../frontend/src/Images/productImages',
+                    $newFileName
+                );
+            } catch(FileException $e){
+                return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+
+            $data['image'] = $newFileName;
+        }else{
             $data['image'] = 'no-image.svg';
         }
 

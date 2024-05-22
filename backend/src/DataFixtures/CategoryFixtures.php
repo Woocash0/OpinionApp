@@ -10,6 +10,7 @@ class CategoryFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        /*
         // Główne kategorie
         $electronics = new Category();
         $electronics->setCategoryName('Elektronika');
@@ -138,8 +139,24 @@ class CategoryFixtures extends Fixture
         $cutlery->setCategoryName('Sztućce i naczynia');
         $cutlery->setParentCategory($home);
         $manager->persist($cutlery);
+    */
+    // Pobranie repozytorium encji Category
+    $categoryRepository = $manager->getRepository(Category::class);
 
+    // Wyszukanie istniejącego obiektu w bazie danych
+    $phones = $categoryRepository->findOneBy(['CategoryName' => 'Telefony']);
+
+    if (!$phones) {
+        throw new \Exception('Category "Telefony" not found.');
+    }
+
+    $charger = new Category();
+    $charger->setCategoryName('Ładowarki');
+    $charger->setParentCategory($phones);
+    $manager->persist($charger);
         // Zapis do bazy danych
         $manager->flush();
     }
+
+
 }

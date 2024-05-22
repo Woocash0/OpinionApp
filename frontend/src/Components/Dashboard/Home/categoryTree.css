@@ -9,24 +9,32 @@
 .sub-categories  ,
 .third-level-categories {
     border-bottom: 1px solid #261132;
+    background-color: white;
+    
 }
 
 .main-categories ul ,
 .sub-categories div  ,
-.third-level-categories div div div  {
+.third-level-categories ul {
     display: flex;
     flex-wrap: wrap; 
-    justify-content: space-evenly;  
+    justify-content: space-around;  
+    align-items: stretch;
+    margin: 0;
 }
 
 .main-categories ul li,
 .sub-categories div div li ,
 .third-level-categories div div div li {
-    color: white;
-    border: 2px solid #261132;
-    border-radius: 2dvb;
+    color: #261132;
+    font-weight: bold;
     font-size: 1.5vh;
     padding: 15px;
     margin: 0;
     letter-spacing: 2px;
 }
+
+.main-category.active, .sub-category.active, .third-level-category.active {
+    background-color: lightgray;
+}
+

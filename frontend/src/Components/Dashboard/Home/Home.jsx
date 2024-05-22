@@ -6,12 +6,12 @@ import Products from './Products'
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  console.log("HOME:", selectedCategory);
+  const [selectedCategoryName, setSelectedCategoryName] = useState(null);
 
   return (
     <>
-      <CategoryTree onSelectCategory={setSelectedCategory}/>
-      <Products selectedCategory={selectedCategory} />
+      <CategoryTree onSelectCategory={setSelectedCategory} onSelectCategoryName={setSelectedCategoryName}/>
+      <Products selectedCategory={selectedCategory} selectedCategoryName={selectedCategoryName} />
     </>
   );
 };

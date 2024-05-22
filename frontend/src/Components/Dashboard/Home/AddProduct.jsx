@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "./addProduct.css";
+import {toast} from "react-hot-toast";
 
 function AddProduct() {
     const [formData, setFormData] = useState({
@@ -84,12 +85,13 @@ function AddProduct() {
           })
         .then(response => {
             console.log('Product added successfully:', response.data);
+            toast.success('Product added successfully');
         })
         .catch(error => {
             if (error.response && error.response.data && error.response.data.violations) {
-                setFieldErrors(error.response.data.violations.map(violation => violation.message));
+                setFieldErrors(error.response.data.errors.map(errors => errors.message));
             } else {
-                console.error('Error:', error);
+                console.error('Error:', error.response.data);
             }
         });
     };

@@ -120,12 +120,6 @@ input, select, textarea {
   font-family: "Inter";
   border: none;
 }
-#info button{
-  width: 40%;
-}
-.detail_container textarea{
-  height: 150%;
-}
 
 #sign:hover {
   background-color: transparent;
@@ -207,7 +201,7 @@ form.login > #signup:hover {
 }
 
 nav {
-  width: 20vw;
+  width: 15vw;
   height: 100%;
   background: white;
   display: flex;
