@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {toast} from "react-hot-toast";
 
 function AddWarranty() {
     const [formData, setFormData] = useState({

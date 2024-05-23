@@ -163,10 +163,14 @@ section {
 }
 #elipse {
   position: relative;
+  /*
   border-radius: 100%;
+  border: 15px solid #261132;
+  */
+
   width: 80%;
   height: 80%;
-  border: 15px solid #261132;
+  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -184,9 +188,8 @@ section {
   align-items: center;
 }
 #detail_receipt > img{
-  height: 120%;
-  width: auto;
-  max-width: 80%;
+  height: 100%;
+
 }
 #elipse .timebox {
   width: 300px;
@@ -396,6 +399,9 @@ section {
   }
   .add_button > img {
     width: 60px;
+  }
+  .productInfo{
+    flex-direction: column;
   }
 
   .notification-panel {

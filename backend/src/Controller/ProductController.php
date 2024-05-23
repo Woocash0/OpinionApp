@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\Opinion;
 use App\Entity\Product;
 use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,14 +27,26 @@ class ProductController extends AbstractController
         $productData = [];
 
         foreach ($products as $product) {
+            $opinions = [];
+            foreach ($product->getOpinions() as $opinion) {
+                $opinions[] = [
+                    'id' => $opinion->getId(),
+                    'opinionText' => $opinion->getOpinionText(),
+                    'rating' => $opinion->getRating(),
+                    'thumbsUp' => $opinion->getThumbsUp(),
+                    'thumbsDown' => $opinion->getThumbsDown(),
+                    'createdBy' => $opinion->getCreatedBy()->getEmail()
+                ];
+            }
+
             $productData[] = [
                 'id' => $product->getId(),
                 'productName' => $product->getProductName(),
                 'description' => $product->getDescription(),
                 'image' => $product->getImage(),
-                'categoryId' =>$product->getCategory()->getId(),
-                'categoryName' =>$product->getCategory()->getCategoryName(),
-                'opinions' => $product->getOpinions(),
+                'categoryId' => $product->getCategory()->getId(),
+                'categoryName' => $product->getCategory()->getCategoryName(),
+                'opinions' => $opinions,
                 'barcode' => $product->getBarcode(),
                 'producer' => $product->getProducer()
             ];
@@ -110,5 +124,50 @@ class ProductController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['message' => 'Product added successfully'], Response::HTTP_CREATED);
+    }
+
+
+
+
+    #[Route('/add_opinion', name: 'add_opinion', methods: ['POST'])]
+    public function addOpinion(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $productId = $data['productId'] ?? null;
+
+        if (!$productId) {
+            return new JsonResponse(['error' => 'Product ID is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $product = $em->getRepository(Product::class)->find($productId);
+        if (!$product) {
+            return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $opinion = new Opinion();
+        $opinion->setOpinionText($data['opinionText']);
+        $opinion->setRating(0);
+        $opinion->setThumbsUp($data['thumbsUp'] ?? null);
+        $opinion->setThumbsDown($data['thumbsDown'] ?? null);
+      
+         // Assuming you have a User entity and a way to fetch the user. This is just an example.
+         $userEmail = $data['createdBy'] ?? null;
+         if (!$userEmail) {
+             return new JsonResponse(['error' => 'User Email is required'], Response::HTTP_BAD_REQUEST);
+         }
+ 
+         $user = $em->getRepository(User::class)->find($userEmail);
+         if (!$user) {
+             return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+         }
+ 
+         $opinion->setCreatedBy($user);
+         $product->addOpinion($opinion);
+ 
+         $em->persist($opinion);
+         $em->flush();
+ 
+         return new JsonResponse(['status' => 'Opinion added'], Response::HTTP_CREATED);
     }
 }

@@ -1,3 +1,4 @@
+/*
 #info {
   background-color: unset;
   width: inherit;
@@ -5,6 +6,7 @@
   font-family: "Inter";
 
 }
+*/
 #info > .detail_container {
   max-width: 40em;
 }
@@ -33,7 +35,13 @@ form.login {
 
 @media only screen and (max-device-width: 1555px){
   #info {
-    height: 40em;
+    height: 34em;
+  }
+}
+
+@media only screen and (max-device-width: 1235px){
+  #info {
+    height: 29em;
   }
 }
 

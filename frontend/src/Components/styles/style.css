@@ -317,13 +317,17 @@ li:hover i#animated,
 nav > ul > li > .button {
   font-family: "Roboto";
   color: #261132;
-  margin-left: 1em;
+  margin-left: 1vw;
   text-align: center;
   letter-spacing: 0.7px;
-  width: 60%;
+  width: 90%;
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
+}
+.nav-text{
+  padding-left: 0.4vw;
+  letter-spacing: 0.1vw;
 }
 
 li {

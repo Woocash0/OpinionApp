@@ -3,6 +3,13 @@ import axios from 'axios';
 import "./addProduct.css";
 import {toast} from "react-hot-toast";
 
+const infoStyle = {
+    backgroundColor: 'unset',
+    width: 'inherit',
+    justifyContent: 'space-evenly',
+    fontFamily: 'Inter'
+};
+
 function AddProduct() {
     const [formData, setFormData] = useState({
         category_id: '',
@@ -100,7 +107,7 @@ function AddProduct() {
         <>
             <header>Add Product</header>
             <form onSubmit={handleSubmit}>
-                <div id="info">
+                <div id="info" style={infoStyle}>
                     <div className="detail_container">
                         <select name="category_id" className="detail" value={formData.category_id} onChange={handleCategoryChange}>
                             <option value="">Select Category</option>

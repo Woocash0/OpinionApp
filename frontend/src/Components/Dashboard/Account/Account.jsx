@@ -6,6 +6,13 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Loading from '../../Loading';
 
+const infoStyle = {
+    backgroundColor: 'unset',
+    width: 'inherit',
+    justifyContent: 'space-evenly',
+    fontFamily: 'Inter'
+};
+
 const Account = () => {
    const signOut = useSignOut();
    const [userDetails, setUserDetails] = useState(null);
@@ -50,7 +57,7 @@ const Account = () => {
       >
           <div>
               <header>My account</header>
-              <div id="info">
+              <div id="info" style={infoStyle}>
                   {loading ? ( 
                       <Loading />
                   ) : (

@@ -9,12 +9,16 @@ const Navbar = () => {
       <img src={logo} alt="Logo" />
       <ul>
         <NavItem icon={faHouse} link="/" text="Home" />
-        <NavItem icon={faHouse} link="warranties" text="Warranties" />
         <NavItem icon={faSquarePlus} link="add_product" text="Add Product" />
-        <NavItem icon={faTags} link="products" text="Products" />
-        <SearchNavItem />
-        <NavItem icon={faBoxArchive} link="archive" text="Archive" />
         <NavItem icon={faUser} link="account" text="My account" />
+        
+        {/*
+        <SearchNavItem />
+        <NavItem icon={faHouse} link="warranties" text="Warranties" />
+        <NavItem icon={faTags} link="products" text="Products" />
+        <NavItem icon={faBoxArchive} link="archive" text="Archive" />
+        
+        */}
       </ul>
     </nav>
   );
