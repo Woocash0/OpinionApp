@@ -2,10 +2,15 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
+import { faUser, faThumbsUp, faThumbsDown} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Loading from '../../Loading';
+import "./opinionContainer.css";
+
 
 const OpinionContainer = ({ existingOpinions, productId }) => {
   const [opinion, setOpinion] = useState('');
@@ -64,12 +69,26 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
       </form>
       <div className='opinions'>
       {existingOpinions.map(opinon => (
-                    <div className="warranty_box" key={opinon.id}>
-                            <div id="createdBy">{opinon.createdBy}</div>
-                            <div id="opinionText">{opinon.opinionText}</div>
-                            <div id="rating">{opinon.rating}</div>
-                            <div id="thumbsDown">{opinon.thumbsDown}</div>
-                            <div id="thumbsUp">{opinon.thumbsUp}</div>
+                    <div className="opinion" key={opinon.id}>
+                        <div className='opinion-details'>
+                            <div className="user-profile">
+                                <FontAwesomeIcon icon={faUser} className='opinion-icon' size='lg' style={{ color: 'white' }} />
+                                <div id="createdBy">{opinon.createdBy}</div>
+                            </div>
+                            <div id="rating">Rating: {opinon.rating}</div>
+                            <div className='opinion-reactions'>
+                                <div id="thumbsUp"><FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinon.thumbsUp}</div>
+                                <div id="thumbsDown"><FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinon.thumbsDown}</div>
+                            </div>
+                        </div>  
+                        <div id="opinionText">{opinon.opinionText}</div>   
+                        <div className='opinion_ratings'>
+                            <div id="durability_rating">Durability: {opinon.durability_rating}</div>
+                            <div id="price_rating">Price: {opinon.price_rating}</div>
+                            <div id="design_rating">Design: {opinon.design_rating}</div>
+                            <div id="capabilities_rating">Capabilities: {opinon.capabilities_rating}</div>
+                        </div>
+                        
                     </div>
                 ))}
       </div>

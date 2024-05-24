@@ -1,0 +1,86 @@
+  
+.opinion-container{
+    height: 30vh;
+    color: white;
+    border-radius: 24px;
+    padding: 1vw;
+    position: relative;
+    background: #26113299;
+    backdrop-filter: blur(4px);
+    overflow: auto;
+
+}
+
+.add-opinion-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 10px 10px;
+    background-color: transparent;
+    color: white;
+    border: 1px white solid;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 1.5em;
+  }
+
+  .inputOpinion{
+    margin: 1em 0 1em 0;
+    width: 100%;
+    max-width: 100%;
+
+  }
+
+  
+  .opinion-header{
+    padding: 10px 10px;
+    margin: 0;
+}
+
+
+  .opinions{
+
+  }
+
+  .opinion{
+    border: none;
+    margin-top: 1em;
+
+  }
+
+  .opinion-details{
+    display: flex;
+    padding: 1em 0.5em 0.1em 0.5em;
+    justify-content: space-between;
+    align-items: end;
+  }
+
+  #opinionText{
+    border: 1px solid white;
+    border-radius: 16px;
+    padding: 1em;
+    letter-spacing: 0.15em;
+  }
+
+  .opinion-reactions{
+    display: flex;
+  }
+
+  .opinion-icon{
+    margin-right: 5px;
+  }
+
+  .user-profile{
+    display: flex;
+  }
+
+  #thumbsUp,
+  #thumbsDown{
+    display: flex;
+    padding-left: 1em;
+  }
+
+.opinion_ratings{
+    display: flex;
+    justify-content: space-around;
+}

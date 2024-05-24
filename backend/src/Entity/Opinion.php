@@ -34,6 +34,18 @@ class Opinion
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $durability_rating = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $design_rating = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $price_rating = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $capabilities_rating = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -107,6 +119,54 @@ class Opinion
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getDurabilityRating(): ?float
+    {
+        return $this->durability_rating;
+    }
+
+    public function setDurabilityRating(?float $durability_rating): static
+    {
+        $this->durability_rating = $durability_rating;
+
+        return $this;
+    }
+
+    public function getDesignRating(): ?float
+    {
+        return $this->design_rating;
+    }
+
+    public function setDesignRating(?float $design_rating): static
+    {
+        $this->design_rating = $design_rating;
+
+        return $this;
+    }
+
+    public function getPriceRating(): ?float
+    {
+        return $this->price_rating;
+    }
+
+    public function setPriceRating(?float $price_rating): static
+    {
+        $this->price_rating = $price_rating;
+
+        return $this;
+    }
+
+    public function getCapabilitiesRating(): ?float
+    {
+        return $this->capabilities_rating;
+    }
+
+    public function setCapabilitiesRating(?float $capabilities_rating): static
+    {
+        $this->capabilities_rating = $capabilities_rating;
 
         return $this;
     }

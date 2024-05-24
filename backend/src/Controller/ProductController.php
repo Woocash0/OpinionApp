@@ -16,6 +16,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
+Use Sentiment\Analyzer;
+
+
 
 class ProductController extends AbstractController
 {
@@ -33,6 +36,10 @@ class ProductController extends AbstractController
                     'id' => $opinion->getId(),
                     'opinionText' => $opinion->getOpinionText(),
                     'rating' => $opinion->getRating(),
+                    'durability_rating' => $opinion->getDurabilityRating(),
+                    'price_rating' => $opinion->getPriceRating(),
+                    'design_rating' => $opinion->getDesignRating(),
+                    'capabilities_rating' => $opinion->getCapabilitiesRating(),
                     'thumbsUp' => $opinion->getThumbsUp(),
                     'thumbsDown' => $opinion->getThumbsDown(),
                     'createdBy' => $opinion->getCreatedBy()->getEmail()
@@ -127,11 +134,64 @@ class ProductController extends AbstractController
     }
 
 
+    
 
 
     #[Route('/add_opinion', name: 'add_opinion', methods: ['POST'])]
     public function addOpinion(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
+        
+        function sentimentAnalysisScore($comment, $lexiconName) {
+            
+            $analyzer = new Analyzer();
+
+            switch ($lexiconName) {
+                case "overall_rating":
+                    break;
+                case "durability_rating":
+                    include 'C:\Users\lukas\Desktop\PI\backend\src\lexicon\durability_lexicon.php';
+                    $lexicon = $durability_words;
+                    $analyzer->updateLexicon($lexicon);
+                    break;
+                case "price_rating":
+                    include 'C:\Users\lukas\Desktop\PI\backend\src\lexicon\price_lexicon.php';
+                    $lexicon = $price_words;
+                    $analyzer->updateLexicon($lexicon);
+                    break;
+                case "capabilities_rating":
+                    include 'C:\Users\lukas\Desktop\PI\backend\src\lexicon\capabilities_lexicon.php';
+                    $lexicon = $capabilities_words;
+                    $analyzer->updateLexicon($lexicon);
+                    break;
+                case "design_rating":
+                    include 'C:\Users\lukas\Desktop\PI\backend\src\lexicon\design_lexicon.php';
+                    $lexicon = $design_words;
+                    $analyzer->updateLexicon($lexicon);
+                    break;
+                default:
+                    break;
+            }
+
+            $sentiment= $analyzer->getSentiment($comment);
+
+            $w_neg = -1;
+            $w_neu = 0;
+            $w_pos = 1;
+        
+            // Compute the weighted sum of the sentiment components
+            $weighted_sum = ($sentiment['neg'] * $w_neg) + ($sentiment['neu'] * $w_neu) + ($sentiment['pos'] * $w_pos);
+            $scaled_score2 = ((($sentiment['compound'] + 1) / 2) * 10);
+        
+            // Scale the weighted sum to a 0-10 range
+            $min_possible_value = -1;
+            $max_possible_value = 1;
+            $scaled_score = (($weighted_sum - $min_possible_value) / ($max_possible_value - $min_possible_value)) * 10;
+            $scaled_score2 = ((($sentiment['compound'] + 1) / 2) * 10);
+            // Return the final score
+            return $scaled_score2;
+        }
+    
+
         $data = json_decode($request->getContent(), true);
 
         $productId = $data['productId'] ?? null;
@@ -145,9 +205,15 @@ class ProductController extends AbstractController
             return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
 
+        
+
         $opinion = new Opinion();
         $opinion->setOpinionText($data['opinionText']);
-        $opinion->setRating(0);
+        $opinion->setRating(sentimentAnalysisScore($data['opinionText'], "overall_rating"));
+        $opinion->setDurabilityRating(sentimentAnalysisScore($data['opinionText'], "durability_rating"));
+        $opinion->setPriceRating(sentimentAnalysisScore($data['opinionText'], "price_rating"));
+        $opinion->setCapabilitiesRating(sentimentAnalysisScore($data['opinionText'], "capabilities_rating"));
+        $opinion->setDesignRating(sentimentAnalysisScore($data['opinionText'], "design_rating"));
         $opinion->setThumbsUp($data['thumbsUp'] ?? null);
         $opinion->setThumbsDown($data['thumbsDown'] ?? null);
       

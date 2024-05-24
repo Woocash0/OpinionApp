@@ -102,6 +102,10 @@ section {
   transform: translate(-50%, -50%);
   z-index: 9999;
   font-family: "Roboto";
+
+}
+.productInfo{
+
 }
 
 .notification-overlay {
