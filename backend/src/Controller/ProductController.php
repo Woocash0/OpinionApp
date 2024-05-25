@@ -145,6 +145,8 @@ class ProductController extends AbstractController
             
             $analyzer = new Analyzer();
 
+            $sentiment_overall= $analyzer->getSentiment($comment);
+
             switch ($lexiconName) {
                 case "overall_rating":
                     break;
@@ -174,21 +176,24 @@ class ProductController extends AbstractController
 
             $sentiment= $analyzer->getSentiment($comment);
 
+            if($sentiment_overall == $sentiment && $lexiconName !="overall_rating"){
+                return null;
+            }
+            /*
             $w_neg = -1;
             $w_neu = 0;
             $w_pos = 1;
         
-            // Compute the weighted sum of the sentiment components
             $weighted_sum = ($sentiment['neg'] * $w_neg) + ($sentiment['neu'] * $w_neu) + ($sentiment['pos'] * $w_pos);
-            $scaled_score2 = ((($sentiment['compound'] + 1) / 2) * 10);
         
-            // Scale the weighted sum to a 0-10 range
+
             $min_possible_value = -1;
             $max_possible_value = 1;
             $scaled_score = (($weighted_sum - $min_possible_value) / ($max_possible_value - $min_possible_value)) * 10;
-            $scaled_score2 = ((($sentiment['compound'] + 1) / 2) * 10);
-            // Return the final score
-            return $scaled_score2;
+            */
+            $scaled_score = ((($sentiment['compound'] + 1) / 2) * 10);
+
+            return $scaled_score;
         }
     
 
@@ -205,20 +210,7 @@ class ProductController extends AbstractController
             return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
 
-        
-
-        $opinion = new Opinion();
-        $opinion->setOpinionText($data['opinionText']);
-        $opinion->setRating(sentimentAnalysisScore($data['opinionText'], "overall_rating"));
-        $opinion->setDurabilityRating(sentimentAnalysisScore($data['opinionText'], "durability_rating"));
-        $opinion->setPriceRating(sentimentAnalysisScore($data['opinionText'], "price_rating"));
-        $opinion->setCapabilitiesRating(sentimentAnalysisScore($data['opinionText'], "capabilities_rating"));
-        $opinion->setDesignRating(sentimentAnalysisScore($data['opinionText'], "design_rating"));
-        $opinion->setThumbsUp($data['thumbsUp'] ?? null);
-        $opinion->setThumbsDown($data['thumbsDown'] ?? null);
-      
-         // Assuming you have a User entity and a way to fetch the user. This is just an example.
-         $userEmail = $data['createdBy'] ?? null;
+        $userEmail = $data['createdBy'] ?? null;
          if (!$userEmail) {
              return new JsonResponse(['error' => 'User Email is required'], Response::HTTP_BAD_REQUEST);
          }
@@ -227,9 +219,22 @@ class ProductController extends AbstractController
          if (!$user) {
              return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
          }
- 
-         $opinion->setCreatedBy($user);
-         $product->addOpinion($opinion);
+    
+
+        $opinion = new Opinion();
+        $opinion->setOpinionText($data['opinionText']);
+        $opinion->setThumbsUp($data['thumbsUp'] ?? null);
+        $opinion->setThumbsDown($data['thumbsDown'] ?? null);
+        $opinion->setCreatedBy($user);
+
+        $opinion->setRating(sentimentAnalysisScore($data['opinionText'], "overall_rating"));
+        $opinion->setDurabilityRating(sentimentAnalysisScore($data['opinionText'], "durability_rating"));
+        $opinion->setPriceRating(sentimentAnalysisScore($data['opinionText'], "price_rating"));
+        $opinion->setCapabilitiesRating(sentimentAnalysisScore($data['opinionText'], "capabilities_rating"));
+        $opinion->setDesignRating(sentimentAnalysisScore($data['opinionText'], "design_rating"));
+        
+
+        $product->addOpinion($opinion);
  
          $em->persist($opinion);
          $em->flush();

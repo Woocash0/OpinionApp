@@ -39,47 +39,57 @@
 }
 
 .product_ratings {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Trzy kolumny */
-    grid-template-rows: repeat(3, auto); /* Trzy wiersze, automatyczna wysokość */
-    gap: 0; /* Odstęp między elementami */
-    height: 40%;
+    display: flex;
+    justify-content: space-between;
+
+    height: 25%;
+    width: 70%;
   }
   
   .product_ratings .detail_container{
-    height: 4.1vh !important;
-    width: 10vw !important;
+    height: 100% !important;
+    width: 100% !important;
 
 }
 .product_ratings .detail_container .detail{
-    width: 2em !important;
-    padding: 1vh;
+    margin: 0 !important;
+    width: 60% !important;
 }
 .product_ratings .detail_container .detail_name{
     text-align: center;
 }
   
   .detail_container:nth-child(1) {
-    grid-column: 2; /* Overall Rating */
-    grid-row: 2;
-  }
-  
-  .detail_container:nth-child(2) {
-    grid-column: 1; /* Durability Rating */
+    grid-column: 3; /* Overall Rating */
     grid-row: 1;
   }
   
+  .detail_container:nth-child(2) {
+    grid-column: 4; /* Durability Rating */
+    grid-row: 2;
+  }
+  
   .detail_container:nth-child(3) {
-    grid-column: 3; /* Price Rating */
+    grid-column: 5; /* Price Rating */
     grid-row: 1;
   }
   
   .detail_container:nth-child(4) {
-    grid-column: 1; /* Capabilities Rating */
-    grid-row: 3;
+    grid-column: 2; /* Capabilities Rating */
+    grid-row: 2;
   }
   
   .detail_container:nth-child(5) {
-    grid-column: 3; /* Design Rating */
-    grid-row: 3;
+    grid-column: 1; /* Design Rating */
+    grid-row: 1 ;
   }
+
+  @media only screen and (max-device-width: 1235px) {
+  
+    .product_ratings {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* Trzy kolumny */
+        grid-template-rows: repeat(2, auto); /* Trzy wiersze, automatyczna wysokość */
+        gap: 0; /* Odstęp między elementami */
+      }
+}

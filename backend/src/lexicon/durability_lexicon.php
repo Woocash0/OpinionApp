@@ -325,8 +325,7 @@ $durability_words = [
 'incomparable' => '2.0',                                                                                                                                                                                                                                                                 // Niezrównany
 'unrivaled' => '2.0',                                                                                                                                                                                                                                                                            // Niezrównany
 'beyond compare' => '2.0',                                                                                                                                                                                                                                                                                      // Niezrównany
-'unexcelled' => '2.0'  ,  
-
+'unexcelled' => '2.0'  , 
 //Negatywne
 //---------------------------------------
 'fragile' => '-2.0', // kruchy, łamliwy

@@ -78,7 +78,6 @@ $price_words = [
    'bargain' => '1.0',                     // Okazja
    'economical' => '1.0',                  // Ekonomiczna
    'competitive' => '1.0',                 // Konkurencyjna
-
    //Negatywne
    //-------------------------------------------------------
    'expensive' => '-1.0',                  // Droga

@@ -93,7 +93,6 @@ $capabilities_words = [
    'zero-defect' => '2.0',                  // Bez wad
    'cutting-edge' => '2.0',                 // Nowatorski
    'multi-purpose' => '2.0',                // Wielozadaniowy
-
    //Negatywne
    //-------------------------------------------------------------
    'inadequate' => '-2.0',                 // Niewystarczający

@@ -21,14 +21,15 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path="/" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><Home /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/account" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><Account /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/warranties" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><WarrantiesContainer /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/add_product" element={<RequireAuth loginPath="/add_product"><LayoutWithNavbar><AddProduct /></LayoutWithNavbar></RequireAuth>} />
+      <Route path="/" element={<LayoutWithNavbar><Home /></LayoutWithNavbar>} />
 
     {/* Trasy używające LayoutWithoutNavbar */}
       <Route path="/loginform" element={<LayoutWithoutNavbar><LoginForm /></LayoutWithoutNavbar>} />
       <Route path="/signinform" element={<LayoutWithoutNavbar><RegistrationForm /></LayoutWithoutNavbar>} />
+      
     </Routes>
     </>
   )

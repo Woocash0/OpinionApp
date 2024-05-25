@@ -34,19 +34,19 @@ function RegistrationForm() {
   
       console.log(response.data); 
 
-    if (response.data.success) {
-      toast.success("Rejestracja przebiegła pomyślnie!");
-      navigate('/loginform?success=true', {
-        state: { successMessage: 'Rejestracja przebiegła pomyślnie!' },
-      });
-    } else {
-      setFieldErrors(response.data.errors || []);
-      toast.error(response.data.errors);
+      if (response.data.success) {
+        toast.success("Registrated successfully!");
+        navigate('/loginform?success=true', {
+          state: { successMessage: 'Registrated successfully!' },
+        });
+      } else {
+        setFieldErrors(response.data.errors || []);
+        toast.error(response.data.errors);
+      }
+    } catch (error) {
+      setFieldErrors(error.response.data.errors || []);
+      toast.error(error.response.data.errors);
     }
-  } catch (error) {
-    setFieldErrors(error.response.data.errors || []);
-    toast.error(error.response.data.errors);
-  }
 
 
   };

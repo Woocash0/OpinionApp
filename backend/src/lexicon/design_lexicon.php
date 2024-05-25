@@ -158,7 +158,7 @@ $design_words = [
     'excellent' => '1.5',         // Doskonały
     'remarkable' => '1.5',        // Godny uwagi
     'phenomenal' => '1.5',        // Fenomenalny
- 'outstanding' => '1.5',       // Wybitny
+    'outstanding' => '1.5',       // Wybitny
     'superb' => '1.5',            // Doskonały
     'awesome' => '1.5',           // Niesamowity
     'terrific' => '1.5',          // Wspaniały
@@ -211,7 +211,6 @@ $design_words = [
     'cozy' => '1.0',              // Przytulny
     'inviting' => '1.0',          // Zapraszający
     'homely' => '1.0',            // Domowy
-
     //Negatywne słowa
     //----------------------------------------------------
     'ugly' => '-2.0',                // Brzydki

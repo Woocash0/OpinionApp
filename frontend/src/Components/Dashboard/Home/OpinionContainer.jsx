@@ -12,6 +12,7 @@ import Loading from '../../Loading';
 import "./opinionContainer.css";
 
 
+
 const OpinionContainer = ({ existingOpinions, productId }) => {
   const [opinion, setOpinion] = useState('');
   const signOut = useSignOut();
@@ -19,13 +20,13 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+  const authToken = cookies.find(cookie => cookie[0] === '_auth');
+
   const addOpinionHandler = async (e) => {
     e.preventDefault();
     try {
       if (opinion.trim() !== '') {
-        const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-        const authToken = cookies.find(cookie => cookie[0] === '_auth');
-  
         const response = await axios.get('http://localhost:8000/account', {
           headers: {
             'Authorization': `Bearer ${authToken[1]}`
@@ -33,9 +34,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
         });
   
         setUserDetails(response.data.user);
-        console.log(response.data.user.email);
-        console.log(productId);
-        console.log(opinion);
   
         const opinionResponse = await axios.post('http://localhost:8000/add_opinion', {
           productId: productId,
@@ -45,7 +43,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
           createdBy: response.data.user.id
         });
   
-        console.log('Opinion added:', opinionResponse.data);
         toast.success("Opinion added");
         setOpinion('');
       }
@@ -57,6 +54,7 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
   return (
     <div className='opinion-container'>
       <header className='opinion-header'>Opinions ({existingOpinions.length})</header>
+      {authToken && (
       <form onSubmit={addOpinionHandler}>
         <input
           type="text"
@@ -67,26 +65,27 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
         />
         <button type="submit" className="add-opinion-button">Comment</button>
       </form>
+      )}
       <div className='opinions'>
-      {existingOpinions.map(opinon => (
-                    <div className="opinion" key={opinon.id}>
+      {existingOpinions.map(opinion => (
+                    <div className="opinion" key={opinion.id}>
                         <div className='opinion-details'>
                             <div className="user-profile">
                                 <FontAwesomeIcon icon={faUser} className='opinion-icon' size='lg' style={{ color: 'white' }} />
-                                <div id="createdBy">{opinon.createdBy}</div>
+                                <div id="createdBy">{opinion.createdBy}</div>
                             </div>
-                            <div id="rating">Rating: {opinon.rating}</div>
+                            <div id="rating">Rating: {opinion.rating}</div>
                             <div className='opinion-reactions'>
-                                <div id="thumbsUp"><FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinon.thumbsUp}</div>
-                                <div id="thumbsDown"><FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinon.thumbsDown}</div>
+                                <div id="thumbsUp"><FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinion.thumbsUp}</div>
+                                <div id="thumbsDown"><FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinion.thumbsDown}</div>
                             </div>
                         </div>  
-                        <div id="opinionText">{opinon.opinionText}</div>   
+                        <div id="opinionText">{opinion.opinionText}</div>   
                         <div className='opinion_ratings'>
-                            <div id="durability_rating">Durability: {opinon.durability_rating}</div>
-                            <div id="price_rating">Price: {opinon.price_rating}</div>
-                            <div id="design_rating">Design: {opinon.design_rating}</div>
-                            <div id="capabilities_rating">Capabilities: {opinon.capabilities_rating}</div>
+                            <div id="price_rating">Price: {(opinion.price_rating) == null ? 'X' : opinion.price_rating}</div>
+                            <div id="durability_rating">Durability: {(opinion.durability_rating) == null ? 'X' : opinion.durability_rating}</div>
+                            <div id="capabilities_rating">Capabilities: {(opinion.capabilities_rating) == null ? 'X' : opinion.capabilities_rating}</div>
+                            <div id="design_rating">Design: {(opinion.design_rating) == null ? 'X' : opinion.design_rating}</div>
                         </div>
                         
                     </div>

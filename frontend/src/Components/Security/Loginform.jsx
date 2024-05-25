@@ -38,7 +38,6 @@ function LoginForm() {
     };
 
     try {
-      console.log(formData);
       const response = await axios.post('http://localhost:8000/login', formData);
       signIn({
         token: response.data.token,
@@ -46,7 +45,6 @@ function LoginForm() {
         tokenType: "Bearer",
         authState: { email: formData.email },
       });
-      console.log('Login successful:', response.data);
 
       if (response.status === 200) {
         const { token, user } = response.data; // Pobierz dane z odpowiedzi
@@ -59,7 +57,7 @@ function LoginForm() {
 
         
         setShowSuccess(true);
-        setSuccessMessage('Zalogowano pomyślnie!');
+        setSuccessMessage('Login successful!');
         toast.success(response.data.message);
 
         setTimeout(() => {
@@ -67,12 +65,12 @@ function LoginForm() {
         }, 1000);  
       }
     } catch (err) {
-    console.error('Login error:', err); // Log pełnego błędu do debugowania
+    console.error('Login Error:', err);
 
 
     // Sprawdź, czy `response` i `response.data` istnieją przed uzyskaniem dostępu
     if (err.response && err.response.data) {
-      setError(`Błąd podczas logowania: ${err.response.data.error || 'Nieznany błąd'}`);
+      setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
       toast.error(err.response.data.error);
     }
   }

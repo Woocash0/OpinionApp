@@ -5,7 +5,7 @@ import Barcode from 'react-barcode';
 import NoImage from '../../../Images/no-image.png';
 import "./productPanel.css";
 import OpinionContainer from './OpinionContainer';
-
+import { motion } from "framer-motion";
 
 
 const ProductPanel = ({ selectedProduct, onClose }) => {
@@ -15,14 +15,24 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
   }
 
   const calculateAverageRating = (opinions, ratingType) => {
-    if (!opinions || opinions.length === 0) return 0;
+    if (!opinions || opinions.length === 0) return "X";
 
-    const total = opinions.reduce((acc, opinion) => acc + opinion[ratingType], 0);
-    return (total / opinions.length).toFixed(1);
+    // Filtrowanie opinii, które mają null jako ratingType
+    const validOpinions = opinions.filter(opinion => opinion[ratingType] !== null);
+
+    if (validOpinions.length === 0) return "X";
+
+    const total = validOpinions.reduce((acc, opinion) => acc + opinion[ratingType], 0);
+    return (total / validOpinions.length).toFixed(1);
 };
 
   return (
-    <>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.3 }}
+>
       <div className="notification-overlay" style={{ display: 'block' }} onClick={onClose}></div>
       <div className="notification-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         {selectedProduct && (
@@ -71,16 +81,16 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
               </div>
               <div className='product_ratings'>
                 <div className="detail_container">
-                  <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'rating')}</div>
-                  <div className="detail_name">Overall</div>
+                  <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'price_rating')}</div>
+                  <div className="detail_name">Price</div>
                 </div>
                 <div className="detail_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'durability_rating')}</div>
                   <div className="detail_name">Durability</div>
                 </div>
                 <div className="detail_container">
-                  <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'price_rating')}</div>
-                  <div className="detail_name">Price</div>
+                  <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'rating')}</div>
+                  <div className="detail_name">Overall</div>
                 </div>
                 <div className="detail_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'capabilities_rating')}</div>
@@ -102,7 +112,7 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
           </div>
           <OpinionContainer existingOpinions={existingOpinions} productId={selectedProduct.id} />
       </div>
-      </>
+      </motion.div>
   );
 };
 
