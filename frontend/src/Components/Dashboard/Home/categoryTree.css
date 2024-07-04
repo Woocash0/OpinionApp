@@ -15,7 +15,7 @@
 
 .main-categories ul ,
 .sub-categories div  ,
-.third-level-categories ul {
+.third-level-categories div {
     display: flex;
     flex-wrap: wrap; 
     justify-content: space-around;  
@@ -25,7 +25,7 @@
 
 .main-categories ul li,
 .sub-categories div div li ,
-.third-level-categories div div div li {
+.third-level-categories div li {
     color: #261132;
     font-weight: bold;
     font-size: 1.5vh;

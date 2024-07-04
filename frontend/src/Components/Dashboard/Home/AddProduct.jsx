@@ -95,10 +95,10 @@ function AddProduct() {
             toast.success('Product added successfully');
         })
         .catch(error => {
-            if (error.response && error.response.data && error.response.data.violations) {
-                setFieldErrors(error.response.data.errors.map(errors => errors.message));
+            if (error.response.data) {
+                toast.error(error.response.data.error + ", Check if this product already exits");
             } else {
-                console.error('Error:', error.response.data);
+                toast.error('Error adding product');
             }
         });
     };

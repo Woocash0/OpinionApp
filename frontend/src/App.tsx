@@ -7,6 +7,7 @@ import { RequireAuth } from "react-auth-kit";
 import { LoginForm } from "./Components/Security/Loginform";
 import  RegistrationForm  from "./Components/Registration/Registrationform";
 import  Home  from "./Components/Dashboard/Home/Home";
+import  RankingPage  from "./Components/Dashboard/Home/RankingPage";
 import  Account  from "./Components/Dashboard/Account/Account";
 import { LayoutWithNavbar, LayoutWithoutNavbar } from './Layout';
 import "./App.css";
@@ -25,6 +26,7 @@ function App() {
       <Route path="/warranties" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><WarrantiesContainer /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/add_product" element={<RequireAuth loginPath="/add_product"><LayoutWithNavbar><AddProduct /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/" element={<LayoutWithNavbar><Home /></LayoutWithNavbar>} />
+      <Route path="/ranking" element={<LayoutWithNavbar><RankingPage /></LayoutWithNavbar>} />
 
     {/* Trasy używające LayoutWithoutNavbar */}
       <Route path="/loginform" element={<LayoutWithoutNavbar><LoginForm /></LayoutWithoutNavbar>} />

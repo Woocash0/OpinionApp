@@ -123,7 +123,7 @@ class ProductController extends AbstractController
             foreach ($errors as $error) {
                 $errorMessages[] = $error->getMessage();
             }
-            return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => "Form Validation Error"], Response::HTTP_BAD_REQUEST);
         }
 
         // Dodanie produktu

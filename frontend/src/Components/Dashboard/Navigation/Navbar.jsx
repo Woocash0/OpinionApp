@@ -9,6 +9,7 @@ const Navbar = () => {
       <img src={logo} alt="Logo" />
       <ul>
         <NavItem icon={faHouse} link="/" text="Home" />
+        <NavItem icon={faHouse} link="ranking" text="Ranking" />
         <NavItem icon={faSquarePlus} link="add_product" text="Add Product" />
         <NavItem icon={faUser} link="account" text="My account" />
         

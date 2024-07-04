@@ -9,31 +9,19 @@ const Category = ({ category, onClick }) => (
     </li>
 );
 
-const SubCategory = ({ category, activeCategoryId, setActiveCategoryId }) => (
-    <div key={`sub-cat-${category.id}`} className={`sub-category-list ${activeCategoryId === category.id ? 'show' : ''}`}>
-        {activeCategoryId === category.id &&
-            <>
-                <button className="close" onClick={() => setActiveCategoryId(null)}>Zamknij</button>
-                <ul>
-                    {category.children.map(child => (
-                        <li key={child.id}>{child.name}</li>
-                    ))}
-                </ul>
-            </>
-        }
-    </div>
-);
 
-const ThirdLevelCategory = ({ category, toggleThirdSubCategory, isActive }) => (
-    <div key={`third-cat-${category.id}`} className={`third-level-category ${isActive ? 'active' : ''}`}>
-        <ul>
-            {category.children.map(grandchild => (
-                <li key={grandchild.id} onClick={() => toggleThirdSubCategory(grandchild.id, grandchild.name)}>
-                    {grandchild.name}
-                </li>
-            ))}
-        </ul>
-    </div>
+const ThirdLevelCategory = ({ category, toggleThirdSubCategory, activeThirdLevelCategoryId }) => (
+    <>
+        {category.children.map(grandchild => (
+            <li
+                key={`third-cat-${grandchild.id}`}
+                className={`third-level-category ${activeThirdLevelCategoryId === grandchild.id ? 'active' : ''}`}
+                onClick={() => toggleThirdSubCategory(grandchild.id, grandchild.name)}
+            >
+                {grandchild.name}
+            </li>
+        ))}
+    </>
 );
 
 const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
@@ -105,22 +93,20 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
                     ))}
                 </div>
                 <div className="third-level-categories">
-                    {rootCategories.map(category => (
-                        <div key={`third-cat-${category.id}`} className={`third-level-category-list ${activeCategoryId === category.id ? 'show' : ''}`}>
-                            {activeCategoryId === category.id && category.children.map(child => (
-                                <div key={`third-cat-${child.id}`} className={`third-level-category ${activeSubCategoryId === child.id ? 'active' : ''}`}>
-                                    {console.log('thirdLevelCategory:', child)} {/* Dodaj ten console.log */}
-                                    {activeSubCategoryId === child.id && (
-                                        <ThirdLevelCategory
-                                            category={child}
-                                            toggleThirdSubCategory={toggleThirdSubCategory}
-                                        />
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
+                {rootCategories.map(category => (
+                    activeCategoryId === category.id && category.children.map(child => (
+                        activeSubCategoryId === child.id && (
+                            <div key={`third-cat-${child.id}`} className={`third-level-category-list show`}>
+                                <ThirdLevelCategory
+                                    category={child}
+                                    toggleThirdSubCategory={toggleThirdSubCategory}
+                                    activeThirdLevelCategoryId={activeThirdLevelCategoryId}
+                                />
+                            </div>
+                        )
+                    ))
+                ))}
+            </div>
             </div>
         </>
     );

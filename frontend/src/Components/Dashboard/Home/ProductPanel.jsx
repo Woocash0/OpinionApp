@@ -24,8 +24,15 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
 
     const total = validOpinions.reduce((acc, opinion) => acc + opinion[ratingType], 0);
     return (total / validOpinions.length).toFixed(1);
-};
+  };
 
+  const calculateOverallRating = (...averageRatings) => {
+    const ratings = averageRatings.filter(rating => rating !== null && rating !=="X");
+    const overallRating = ratings.length > 0 ? (ratings.reduce((acc, rating) => acc + parseFloat(rating), 0) / ratings.length).toFixed(2) : "X";
+  
+    return overallRating;
+  };
+  
   return (
     <motion.div
     initial={{ opacity: 0 }}
@@ -89,7 +96,12 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
                   <div className="detail_name">Durability</div>
                 </div>
                 <div className="detail_container">
-                  <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'rating')}</div>
+                  <div className="detail" id="detail_rating">{calculateOverallRating(
+                    calculateAverageRating(selectedProduct.opinions, 'price_rating'), 
+                    calculateAverageRating(selectedProduct.opinions, 'durability_rating'),
+                    calculateAverageRating(selectedProduct.opinions, 'capabilities_rating'),
+                    calculateAverageRating(selectedProduct.opinions, 'design_rating'))}
+                  </div>
                   <div className="detail_name">Overall</div>
                 </div>
                 <div className="detail_container">

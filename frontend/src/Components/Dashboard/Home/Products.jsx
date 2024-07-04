@@ -21,7 +21,7 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
         : products;
 
     return (
-        <div>
+        <>
             <header>{selectedCategoryName ? `Produkty: ${selectedCategoryName}` : "Produkty"}</header>
             <section className="warranties">
                 {filteredProducts.map(product => (
@@ -37,7 +37,7 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
                     </div>
                 ))}
             </section>
-        </div>
+        </>
     );
 };
 

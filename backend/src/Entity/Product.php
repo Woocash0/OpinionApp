@@ -7,8 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[UniqueEntity(fields: ['barcode'], message: 'There is already a product with this EAN')]
 class Product
 {
     #[ORM\Id]
@@ -29,10 +31,10 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $Category = null;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Opinion::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Opinion::class, cascade: ['remove'] , orphanRemoval: true)]
     private Collection $opinions;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $barcode = null;
 
     #[ORM\Column(length: 255)]

@@ -3,6 +3,7 @@
 $capabilities_words = [
    //Pozytywne
    //-----------------------
+   'smooth' => '1.5',                       // Gładki
    'adaptable' => '1.5',                    // Adaptowalny
    'advanced' => '2.0',                     // Zaawansowany
    'agile' => '2.0',                        // Zwinny
