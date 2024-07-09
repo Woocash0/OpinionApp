@@ -43,45 +43,6 @@ section {
     inset 0px 4px 10px 2px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
 }
-.ranking-panel{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.rank-box{
-  display: flex;
-  height: 4em;
-  width: 90%;
-  margin: 0.5em;
-  justify-content: center;
-  background-color: white;
-  border-radius: 20px;
-  font-size: 1.2em;
-  align-items: center;
-  font-weight: bold;
-  color: #261132;
-}
-
-.rank-place{
-  color:#076478;
-  text-align: center;
-  font-size: 3em;
-  font-family: Inter;
-  width: 20%;
-}
-.rank-image{
-  width: 20%;
-  height: inherit;
-  object-fit: contain;
-}
-.rank-product-name{
-  width: 50%;
-}
-.rank-average-rating{
-  width: 10%;
-}
-
 
 .warranties > div > img {
   height: 50%;

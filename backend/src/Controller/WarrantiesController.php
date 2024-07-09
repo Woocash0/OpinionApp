@@ -57,21 +57,41 @@ class WarrantiesController extends AbstractController
 
 
     #[Route('/warranties', methods:['GET'])]
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, EntityManagerInterface $em): JsonResponse
     {
         try {
+            $userEmail = $request->query->get('owner');
+
+            if (!$userEmail) {
+                return new JsonResponse(['error' => 'User Email is required'], Response::HTTP_BAD_REQUEST);
+            }
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $userEmail]);
+            
+            if (!$user) {
+                return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+            }
             // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
-            $user = $this->tokenAuthenticator->authenticateToken($request);
+            //$user = $this->tokenAuthenticator->authenticateToken($request);
     
             // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie
+            $warranties = $this->warrantyRepository->findWarrantiesWithTags($user->getId());
+
             return new JsonResponse([
-                'message' => "success", 
-                'email' => $user->getEmail(), 
-                'user' => [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail(),
-                ],
-            ]);
+                'warranties' => array_map(function ($warranty) {
+                    return [
+                        'id' => $warranty->getId(),
+                        'category' => $warranty->getCategory(),
+                        'productName' => $warranty->getProductName(),
+                        'purchaseDate' => $warranty->getPurchaseDate()->format('Y-m-d'), // Format daty
+                        'warrantyPeriod' => $warranty->getWarrantyPeriod(),
+                        'receipt' => $warranty->getReceipt(),
+                        'tags' => array_map(function ($tag) {
+                            return $tag->getName(); // Lista nazw tagów
+                        }, $warranty->getTags()->toArray()),
+                    ];
+                }, $warranties),
+            ], 200); // Odpowiedź z kodem 200 (OK)
+
         } catch (BadCredentialsException $e) {
             return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
         } catch (AccessDeniedException $e) {

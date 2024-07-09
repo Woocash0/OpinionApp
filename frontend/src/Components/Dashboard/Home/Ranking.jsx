@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import "./ranking.css";
 
 const calculateAverageRating = (opinions, ratingType) => {
     if (!opinions || opinions.length === 0) return null;
@@ -13,7 +14,7 @@ const calculateAverageRating = (opinions, ratingType) => {
     return (total / validOpinions.length).toFixed(1);
 };
 
-const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) => {
+const Ranking = ({ selectedCategory, selectedCategoryName, onSelectProduct }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -63,4 +64,4 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
     );
 };
 
-export default Products;
+export default Ranking;

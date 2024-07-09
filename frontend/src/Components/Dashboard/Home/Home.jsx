@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import CategoryTree from './CategoryTree'
 import Products from './Products'
 import ProductPanel from './ProductPanel';
-
+import Ranking from './Ranking';
 
 
 const Home = () => {
@@ -17,7 +18,22 @@ const Home = () => {
   return (
     <>
       <CategoryTree onSelectCategory={setSelectedCategory} onSelectCategoryName={setSelectedCategoryName}/>
-      <Products onSelectProduct={handleProductSelect} selectedCategory={selectedCategory} selectedCategoryName={selectedCategoryName} />
+      <Routes>
+          <Route path="/" element={
+            <Products 
+              onSelectProduct={handleProductSelect} 
+              selectedCategory={selectedCategory} 
+              selectedCategoryName={selectedCategoryName} 
+            />
+          } />
+          <Route path="ranking" element={
+            <Ranking 
+              onSelectProduct={handleProductSelect} 
+              selectedCategory={selectedCategory} 
+              selectedCategoryName={selectedCategoryName} 
+            />
+          } />
+        </Routes>
       <ProductPanel selectedProduct={selectedProduct} onClose={() => setSelectedProduct(null)}/>
     </>
   );

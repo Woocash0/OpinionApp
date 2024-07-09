@@ -216,6 +216,7 @@ class ProductController extends AbstractController
          }
  
          $user = $em->getRepository(User::class)->find($userEmail);
+
          if (!$user) {
              return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
          }
