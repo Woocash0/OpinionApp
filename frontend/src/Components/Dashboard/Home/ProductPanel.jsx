@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faPenToSquare, faTrash, faReceipt } from '@fortawesome/free-solid-svg-icons';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Barcode from 'react-barcode';
 import NoImage from '../../../Images/no-image.png';
 import "./productPanel.css";
@@ -40,8 +40,8 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
     exit={{ opacity: 0 }}
     transition={{ duration: 0.3 }}
 >
-      <div className="notification-overlay" style={{ display: 'block' }} onClick={onClose}></div>
-      <div className="notification-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="popup-overlay" style={{ display: 'block' }} onClick={onClose}></div>
+      <div className="product-popup-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         {selectedProduct && (
         <div className='productHeader'>
             <header className='product-header-one'>{selectedProduct.productName}</header>
@@ -53,12 +53,7 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
             <div className="exit" onClick={onClose}>
               <FontAwesomeIcon icon={faXmark} className="steady" />
             </div>
-            {/* 
-            <div className="edit">
-              <FontAwesomeIcon icon={faPenToSquare} className="steady" />
-            </div>
-            */}
-            <div id="elipse">
+            <div id="receipt_container">
             {selectedProduct ? (
                 <div id="detail_receipt">
                   <img src={require(`../../../Images/productImages/${selectedProduct.image}`)} alt={selectedProduct.productName} />
@@ -71,14 +66,6 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
                 </>
               )}
             </div>
-            {/* 
-            <div className="delete">
-              <FontAwesomeIcon icon={faTrash} className="steady" />
-            </div>
-            <div className="location">
-              <FontAwesomeIcon icon={faReceipt} className="steady" />
-            </div>
-            */}
           </div>
           {selectedProduct && (
             <div id="info">

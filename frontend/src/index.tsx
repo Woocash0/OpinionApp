@@ -5,7 +5,6 @@ import { BrowserRouter } from "react-router-dom";
 
 import { AuthProvider } from "react-auth-kit";
 import { Toaster} from "react-hot-toast";
-import { motion } from "framer-motion";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

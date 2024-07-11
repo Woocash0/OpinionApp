@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import "./categoryTree.css";
 
@@ -35,6 +35,34 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
         onSelectCategoryName(categoryName);
     };
 
+    const scrollContainerRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e) => {
+      setIsDragging(true);
+      setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+      setScrollLeft(scrollContainerRef.current.scrollLeft);
+    };
+
+    const handleMouseLeave = () => {
+      setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - scrollContainerRef.current.offsetLeft;
+      const walk = (x - startX) * 2; // Prędkość przewijania
+      scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+
     useEffect(() => {
         axios.get('http://localhost:8000/categories')
             .then(response => {
@@ -67,7 +95,13 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
     return (
         <>
             <div className="category-container">
-                <div className="main-categories">
+                <div className="main-categories" 
+                ref={scrollContainerRef}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}>
+                    
                     <ul>
                         {rootCategories.map(category => (
                             <li

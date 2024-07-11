@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faMagnifyingGlass, faBoxArchive, faUser, faTags, faSquarePlus, faRankingStar } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faBoxArchive, faUser, faTags, faSquarePlus, faRankingStar } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../images/logo_color.svg';
 
 const Navbar = () => {
@@ -8,7 +8,7 @@ const Navbar = () => {
     <nav>
       <img src={logo} alt="Logo" />
       <ul>
-        <NavItem icon={faHouse} link="/" text="Home" />
+        <NavItem icon={faTags} link="/" text="Home" />
         <NavItem icon={faRankingStar} link="/ranking" text="Ranking" />
         <NavItem icon={faSquarePlus} link="add_product" text="Add Product" />
         <NavItem icon={faBoxArchive} link="warranties" text="Warranties" />
@@ -18,7 +18,6 @@ const Navbar = () => {
         <SearchNavItem />
         <NavItem icon={faHouse} link="warranties" text="Warranties" />
         <NavItem icon={faTags} link="products" text="Products" />
-        <NavItem icon={faBoxArchive} link="archive" text="Archive" />
         
         */}
       </ul>

@@ -9,7 +9,7 @@ main {
 
 header {
   width: 90%;
-  height: 10vh;
+  height: 2em;
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
@@ -94,21 +94,10 @@ section {
   border-radius: 10px;
 }
 
-.notification-panel {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  font-family: "Roboto";
 
-}
-.productInfo{
 
-}
 
-.notification-overlay {
+.popup-overlay {
   display: none;
   position: fixed;
   top: 0;
@@ -165,21 +154,10 @@ section {
   bottom: 30px;
   right: 30px;
 }
-#elipse {
+#receipt_container {
   position: relative;
-  /*
-  border-radius: 100%;
-  border: 15px solid #261132;
-  */
-
   width: 80%;
   height: 80%;
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #261132;
 }
 #detail_receipt{
   position: absolute;
@@ -195,15 +173,7 @@ section {
   height: 100%;
 
 }
-#elipse .timebox {
-  width: 300px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  letter-spacing: 2px;
-  font-size: 1.5em;
-}
+
 #info {
   height: 25em;
   width: 50em;
@@ -259,9 +229,7 @@ section {
     width: 34em;
   }
 
-  #elipse .timebox {
-    font-size: 1.5em;
-  }
+  
   #info {
     height: 34em;
     width: 34em;
@@ -293,9 +261,7 @@ section {
     width: 29em;
   }
 
-  #elipse .timebox {
-    font-size: 1.25em;
-  }
+  
   #info {
     height: 29em;
     width: 29em;
@@ -363,7 +329,7 @@ section {
   header {
     font-size: 28px;
     margin: 1.5em 0em 0.25em 0.75em;
-    padding-left: 5px;
+    height: 1em;
   }
 
   section {
@@ -408,7 +374,8 @@ section {
     flex-direction: column;
   }
 
-  .notification-panel {
+  .warranty-popup-panel, 
+  .product-popup-panel {
     flex-direction: column;
   }
 
@@ -452,13 +419,7 @@ section {
     font-size: 1em;
   }
 
-  #elipse {
-    border: 12px solid #261132;
-  }
-  #elipse .timebox {
-    height: 13%;
-    font-size: 0.5em;
-  }
+  
   #info {
     height: 8em;
     width: 8em;
@@ -485,12 +446,6 @@ section {
     width: 6.8em;
   }
 
-  #elipse {
-    border: 10px solid #261132;
-  }
-  #elipse .timebox {
-    font-size: 0.4em;
-  }
   #info {
     height: 6.8em;
     width: 6.8em;

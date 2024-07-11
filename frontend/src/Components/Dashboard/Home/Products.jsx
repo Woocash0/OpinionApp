@@ -22,7 +22,7 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
 
     return (
         <>
-            <header>{selectedCategoryName ? `Produkty: ${selectedCategoryName}` : "Produkty"}</header>
+            <header>{selectedCategoryName ? `Products: ${selectedCategoryName}` : "Products"}</header>
             <section className="warranties">
                 {filteredProducts.map(product => (
                     <div className="warranty_box" key={product.id} onClick={() => onSelectProduct(product)}>

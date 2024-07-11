@@ -16,7 +16,6 @@ import "./Components/styles/account.css";
 import WarrantiesContainer from './Components/Warranties/WarrantiesContainer'
 import AddProduct from './Components/Dashboard/Home/AddProduct'
 
-
 function App() {
   return (
     <>

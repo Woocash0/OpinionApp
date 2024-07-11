@@ -44,11 +44,8 @@ const Warranties = ({ onSelectWarranty }) => {
             })
             .catch(error => {
                 toast.error("Error getting warranties", error.response.data.message);
-                setWarranties([]); // Ustawienie warranties na pustą tablicę w przypadku błędu
+                setWarranties([]);
             })
-            .finally(() => {
-                setLoading(false); // Ustawienie stanu ładowania na false po zakończeniu pobierania danych
-            });
 
         })
         .catch(error => {
@@ -57,12 +54,12 @@ const Warranties = ({ onSelectWarranty }) => {
             navigate('/loginform');
         })
         .finally(() => {
-            setLoading(false); // Ustawienie stanu ładowania na false w przypadku błędu
+            setLoading(false);
         });
     }, []);
 
     if (loading) {
-        return <Loading />; // Renderowanie komponentu Loading podczas ładowania danych
+        return <Loading />; 
     }
 
     return (

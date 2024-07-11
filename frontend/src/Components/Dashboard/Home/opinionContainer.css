@@ -1,13 +1,13 @@
   
 .opinion-container{
-    height: 40vh;
+    height: max-content;
     color: white;
     border-radius: 24px;
     padding: 1vw;
     position: relative;
     background: #26113299;
     backdrop-filter: blur(4px);
-    overflow: auto;
+    
 
 }
 

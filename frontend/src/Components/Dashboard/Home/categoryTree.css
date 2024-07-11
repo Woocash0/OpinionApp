@@ -10,14 +10,24 @@
 .third-level-categories {
     border-bottom: 1px solid #261132;
     background-color: white;
-    
+    overflow-x: scroll;
+    cursor: grab;
+    -ms-overflow-style: none;  /* Ukrycie paska przewijania w Internet Explorerze i Edge */
+    scrollbar-width: none;
 }
+
+.main-categories:active, 
+.sub-categories:active, 
+.third-level-categories:active{
+    cursor: grabbing;
+  }
+
 
 .main-categories ul ,
 .sub-categories div  ,
 .third-level-categories div {
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: nowrap; 
     justify-content: space-around;  
     align-items: stretch;
     margin: 0;
@@ -26,12 +36,14 @@
 .main-categories ul li,
 .sub-categories div div li ,
 .third-level-categories div li {
+    flex: 0 0 auto;
     color: #261132;
     font-weight: bold;
     font-size: 1.5vh;
     padding: 15px;
     margin: 0;
     letter-spacing: 2px;
+    width: max-content;
 }
 
 .main-category.active, .sub-category.active, .third-level-category.active {

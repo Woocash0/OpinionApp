@@ -1,14 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
 import { faUser, faThumbsUp, faThumbsDown} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-
-import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import Loading from '../../Loading';
 import "./opinionContainer.css";
 
 
