@@ -16,6 +16,20 @@
     height: unset !important;
 }
 
+.product-popup-panel {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -47%);
+  z-index: 9999;
+  font-family: "Roboto";
+  overflow: auto;
+  height: 95%;
+  -ms-overflow-style: none;  /* Ukrycie paska przewijania w Internet Explorerze i Edge */
+  scrollbar-width: none;
+}
+
 .productHeader{
     display: flex;
 }

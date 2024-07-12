@@ -40,9 +40,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Opinion::class, orphanRemoval: true)]
     private Collection $opinions;
 
+    #[ORM\OneToMany(mappedBy: 'voter', targetEntity: UserOpinionReaction::class, orphanRemoval: true)]
+    private Collection $userOpinionReactions;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
+        $this->userOpinionReactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -151,6 +155,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($opinion->getCreatedBy() === $this) {
                 $opinion->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserOpinionReaction>
+     */
+    public function getUserOpinionReactions(): Collection
+    {
+        return $this->userOpinionReactions;
+    }
+
+    public function addUserOpinionReaction(UserOpinionReaction $userOpinionReaction): static
+    {
+        if (!$this->userOpinionReactions->contains($userOpinionReaction)) {
+            $this->userOpinionReactions->add($userOpinionReaction);
+            $userOpinionReaction->setVoter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserOpinionReaction(UserOpinionReaction $userOpinionReaction): static
+    {
+        if ($this->userOpinionReactions->removeElement($userOpinionReaction)) {
+            // set the owning side to null (unless already changed)
+            if ($userOpinionReaction->getVoter() === $this) {
+                $userOpinionReaction->setVoter(null);
             }
         }
 

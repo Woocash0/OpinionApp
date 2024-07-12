@@ -6,6 +6,7 @@ import { faUser, faThumbsUp, faThumbsDown} from '@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from "react-hot-toast";
 import "./opinionContainer.css";
+import OpinionReactions from './OpinionReactions';
 
 
 
@@ -71,10 +72,11 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
                                 <div id="createdBy">{opinion.createdBy}</div>
                             </div>
                             <div id="rating">Rating: {opinion.rating}</div>
-                            <div className='opinion-reactions'>
-                                <div id="thumbsUp"><FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinion.thumbsUp}</div>
-                                <div id="thumbsDown"><FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{color: "#ffffff",}} /> {opinion.thumbsDown}</div>
-                            </div>
+                            <OpinionReactions
+                             opinionId={opinion.id}
+                             initialThumbsUp={opinion.thumbsUp}
+                             initialThumbsDown={opinion.thumbsDown}
+                            />
                         </div>  
                         <div id="opinionText">{opinion.opinionText}</div>   
                         <div className='opinion_ratings'>

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OpinionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,10 +23,10 @@ class Opinion
     private ?float $rating = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $thumbsUp = null;
+    private ?int $thumbsUp = 0;
 
     #[ORM\Column(nullable: true)]
-    private ?int $thumbsDown = null;
+    private ?int $thumbsDown = 0;
 
     #[ORM\ManyToOne(inversedBy: 'opinions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -45,6 +47,14 @@ class Opinion
 
     #[ORM\Column(nullable: true)]
     private ?float $capabilities_rating = null;
+
+    #[ORM\OneToMany(mappedBy: 'opinion', targetEntity: UserOpinionReaction::class, orphanRemoval: true)]
+    private Collection $userOpinionReactions;
+
+    public function __construct()
+    {
+        $this->userOpinionReactions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -167,6 +177,36 @@ class Opinion
     public function setCapabilitiesRating(?float $capabilities_rating): static
     {
         $this->capabilities_rating = $capabilities_rating;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserOpinionReaction>
+     */
+    public function getUserOpinionReactions(): Collection
+    {
+        return $this->userOpinionReactions;
+    }
+
+    public function addUserOpinionReaction(UserOpinionReaction $userOpinionReaction): static
+    {
+        if (!$this->userOpinionReactions->contains($userOpinionReaction)) {
+            $this->userOpinionReactions->add($userOpinionReaction);
+            $userOpinionReaction->setOpinion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserOpinionReaction(UserOpinionReaction $userOpinionReaction): static
+    {
+        if ($this->userOpinionReactions->removeElement($userOpinionReaction)) {
+            // set the owning side to null (unless already changed)
+            if ($userOpinionReaction->getOpinion() === $this) {
+                $userOpinionReaction->setOpinion(null);
+            }
+        }
 
         return $this;
     }
