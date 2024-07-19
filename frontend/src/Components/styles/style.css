@@ -94,7 +94,6 @@ select::placeholder {
 input, select, textarea {
   margin: 2em 1em 1em 3em;
   padding: 0px;
-  max-width: 40em;
   background: white;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25),
     inset 0px 4px 8px rgba(0, 0, 0, 0.25);

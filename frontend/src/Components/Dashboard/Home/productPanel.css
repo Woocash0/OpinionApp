@@ -1,3 +1,5 @@
+
+
 #detail_description{
   border: 1px solid #ccc;
   padding: 10px;
@@ -53,57 +55,58 @@
 }
 
 .product_ratings {
-    display: flex;
-    justify-content: space-between;
-
-    height: 25%;
-    width: 70%;
+    width: 80%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Trzy kolumny */
+    grid-template-rows: repeat(2, auto); /* Trzy wiersze, automatyczna wysokość */
+    gap: 0; /* Odstęp między elementami */
   }
+
+.rating_container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
   
-  .product_ratings .detail_container{
-    height: 100% !important;
-    width: 100% !important;
+.product_ratings .rating_container .detail{
+    height: 4em !important;
+    width: 4em !important;
+    border-radius: 40% !important;
 
 }
-.product_ratings .detail_container .detail{
-    margin: 0 !important;
-    width: 60% !important;
-}
-.product_ratings .detail_container .detail_name{
+.product_ratings .rating_container .detail_name{
     text-align: center;
+    padding-top: 4px;
 }
+
   
-  .detail_container:nth-child(1) {
-    grid-column: 3; /* Overall Rating */
+  .rating_container:nth-child(1) {
+    grid-column: 5; /* Overall Rating */
     grid-row: 1;
   }
   
-  .detail_container:nth-child(2) {
+  .rating_container:nth-child(2) {
     grid-column: 4; /* Durability Rating */
     grid-row: 2;
   }
   
-  .detail_container:nth-child(3) {
-    grid-column: 5; /* Price Rating */
+  .rating_container:nth-child(3) {
+    grid-column: 3; /* Price Rating */
     grid-row: 1;
   }
   
-  .detail_container:nth-child(4) {
+  .rating_container:nth-child(4) {
     grid-column: 2; /* Capabilities Rating */
     grid-row: 2;
   }
   
-  .detail_container:nth-child(5) {
+  .rating_container:nth-child(5) {
     grid-column: 1; /* Design Rating */
     grid-row: 1 ;
   }
 
   @media only screen and (max-device-width: 1235px) {
   
-    .product_ratings {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr); /* Trzy kolumny */
-        grid-template-rows: repeat(2, auto); /* Trzy wiersze, automatyczna wysokość */
-        gap: 0; /* Odstęp między elementami */
-      }
+
 }

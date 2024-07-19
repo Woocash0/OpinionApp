@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import "./addProduct.css";
+import "../Dashboard/Home/addProduct.css";
+import "./addWarranty.css";
 import {toast} from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
+import { useSignOut } from 'react-auth-kit';
+import Loading from '../Loading';
 
-function AddProduct() {
+
+function AddWarranty() {
     const [formData, setFormData] = useState({
         category_id: '',
         subcategory_id: '',
         subsubcategory_id: '',
         product_name: '',
-        producer: '',
-        barcode: '',
-        description: '',
-        image: null
+        purchase_date: '',
+        warranty_period: '',
+        user_id: '',
+        receipt: null
     });
 
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [subsubcategories, setSubsubcategories] = useState([]);
     const [fieldErrors, setFieldErrors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const signOut = useSignOut();
+
+    const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+    const authToken = cookies.find(cookie => cookie[0] === '_auth');
+
+    
 
     useEffect(() => {
         axios.get('http://localhost:8000/categories')
@@ -56,6 +69,8 @@ function AddProduct() {
         const file = e.target.files[0];
         setFormData({ ...formData, image: file });
     };
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -98,9 +113,9 @@ function AddProduct() {
 
     return (
         <>
-            <header>Add Product</header>
+            <header>Add Warranty</header>
             <form onSubmit={handleSubmit}>
-                <div className="product_add_form">
+                <div className="warranty_add_form">
                     <div className="detail_container">
                         <select name="category_id" className="detail" value={formData.category_id} onChange={handleCategoryChange}>
                             <option value="">Select Category</option>
@@ -137,20 +152,16 @@ function AddProduct() {
                         <div className="detail_name">Product Name</div>
                     </div>
                     <div className="detail_container">
-                        <input type="text" name="producer" className="detail" value={formData.producer} onChange={handleChange} placeholder="Producer" />
-                        <div className="detail_name">Producer</div>
+                        <input type="date" name="purchase_date" className="detail" value={formData.purchase_date} onChange={handleChange} placeholder="Purchase Date" />
+                        <div className="detail_name">Purchase Date</div>
                     </div>
                     <div className="detail_container">
-                        <textarea name="description" className="detailTextArea" value={formData.description} onChange={handleChange} placeholder="Description"></textarea>
-                        <div className="detail_name">Description</div>
+                        <input type="integer" name="warranty_period" className="detail" value={formData.warranty_period} onChange={handleChange} placeholder="e.g. 5 years" />
+                        <div className="detail_name">Warranty Period</div>
                     </div>
                     <div className="detail_container">
-                        <input type="file" name="image" className="detail" onChange={handleFileChange} />
-                        <div className="detail_name">Image</div>
-                    </div>
-                    <div className="detail_container">
-                        <input type="text" name="barcode" className="detail" value={formData.barcode} onChange={handleChange} placeholder="EAN/GTIN" />
-                        <div className="detail_name">EAN/GTIN</div>
+                        <input type="file" name="receipt" className="detail" onChange={handleFileChange} />
+                        <div className="detail_name">Receipt</div>
                     </div>
                     <button type="submit" id="addButton">ADD</button>
                 </div>
@@ -159,4 +170,4 @@ function AddProduct() {
     );
 }
 
-export default AddProduct;
+export default AddWarranty;

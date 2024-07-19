@@ -2,13 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import "./categoryTree.css";
 
-
 const Category = ({ category, onClick }) => (
-    <li key={category.id} onClick={onClick}>
+    <li onClick={onClick}>
         {category.name}
     </li>
 );
-
 
 const ThirdLevelCategory = ({ category, toggleThirdSubCategory, activeThirdLevelCategoryId }) => (
     <>
@@ -62,7 +60,6 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
       scrollContainerRef.current.scrollLeft = scrollLeft - walk;
     };
 
-
     useEffect(() => {
         axios.get('http://localhost:8000/categories')
             .then(response => {
@@ -105,7 +102,7 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
                     <ul>
                         {rootCategories.map(category => (
                             <li
-                                key={category.id}
+                                key={`main-cat-${category.id}`}
                                 className={`main-category ${activeCategoryId === category.id ? 'active' : ''}`}
                                 onClick={() => toggleMainCategory(category.id, category.name)}
                             >
@@ -130,8 +127,9 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
                 {rootCategories.map(category => (
                     activeCategoryId === category.id && category.children.map(child => (
                         activeSubCategoryId === child.id && (
-                            <div key={`third-cat-${child.id}`} className={`third-level-category-list show`}>
+                            <div key={`third-cat-list-${child.id}`} className={`third-level-category-list show`}>
                                 <ThirdLevelCategory
+                                    key={`third-cat-component-${child.id}`}
                                     category={child}
                                     toggleThirdSubCategory={toggleThirdSubCategory}
                                     activeThirdLevelCategoryId={activeThirdLevelCategoryId}

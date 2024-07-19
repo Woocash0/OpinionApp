@@ -51,6 +51,9 @@ class Opinion
     #[ORM\OneToMany(mappedBy: 'opinion', targetEntity: UserOpinionReaction::class, orphanRemoval: true)]
     private Collection $userOpinionReactions;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $createdAt = null;
+
     public function __construct()
     {
         $this->userOpinionReactions = new ArrayCollection();
@@ -207,6 +210,18 @@ class Opinion
                 $userOpinionReaction->setOpinion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -16,7 +16,7 @@ header {
   font-size: 32px;
   line-height: 38px;
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   letter-spacing: 0.055em;
   margin: 0em 0em 0.5em 2em;
   color: white;
@@ -95,7 +95,11 @@ section {
 }
 
 
+.warranty-popup-panel, 
+.product-popup-panel {
 
+  width: 80em;
+}
 
 .popup-overlay {
   display: none;
@@ -108,8 +112,8 @@ section {
   z-index: 9998;
 }
 #clock {
-  height: 25em;
-  width: 25em;
+  height: 40em;
+  width: 40em;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(4px);
   border-radius: 25px;
@@ -175,14 +179,14 @@ section {
 }
 
 #info {
-  height: 25em;
-  width: 50em;
+  height: 40em;
+  width: 40em;
   background: rgba(7, 100, 120, 0.6);
   backdrop-filter: blur(4px);
   border-radius: 25px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
 }
 #info .detail_container {
@@ -224,6 +228,11 @@ section {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .warranty-popup-panel, 
+  .product-popup-panel {
+    width: 68em;
+  }
+
   #clock {
     height: 34em;
     width: 34em;
@@ -254,6 +263,11 @@ section {
 @media only screen and (max-device-width: 1235px) {
   section {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .warranty-popup-panel, 
+  .product-popup-panel {
+    width: 58em;
   }
 
   #clock {
@@ -377,11 +391,12 @@ section {
   .warranty-popup-panel, 
   .product-popup-panel {
     flex-direction: column;
+    width: 10em;
   }
 
   #clock {
-    height: 8em;
-    width: 8em;
+    height: 10em;
+    width: 10em;
   }
 
   .edit,
@@ -421,8 +436,8 @@ section {
 
   
   #info {
-    height: 8em;
-    width: 8em;
+    height: 10em;
+    width: 10em;
   }
   #info .detail {
     border-radius: 18px;
@@ -437,18 +452,25 @@ section {
   section {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .warranty-popup-panel, 
+  .product-popup-panel {
+    flex-direction: column;
+    width: 8.5em;
+  }
+  
   header {
     width: 70%;
   }
 
   #clock {
-    height: 6.8em;
-    width: 6.8em;
+    height: 8.5em;
+    width: 8.5em;
   }
 
   #info {
-    height: 6.8em;
-    width: 6.8em;
+    height: 8.5em;
+    width: 8.5em;
   }
 
   #info .detail {

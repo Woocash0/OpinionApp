@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Barcode from 'react-barcode';
@@ -74,15 +74,15 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
                 <div className="detail_name" id='detail_description_name'>Description</div>
               </div>
               <div className='product_ratings'>
-                <div className="detail_container">
+                <div className="rating_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'price_rating')}</div>
                   <div className="detail_name">Price</div>
                 </div>
-                <div className="detail_container">
+                <div className="rating_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'durability_rating')}</div>
                   <div className="detail_name">Durability</div>
                 </div>
-                <div className="detail_container">
+                <div className="rating_container">
                   <div className="detail" id="detail_rating">{calculateOverallRating(
                     calculateAverageRating(selectedProduct.opinions, 'price_rating'), 
                     calculateAverageRating(selectedProduct.opinions, 'durability_rating'),
@@ -91,11 +91,11 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
                   </div>
                   <div className="detail_name">Overall</div>
                 </div>
-                <div className="detail_container">
+                <div className="rating_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'capabilities_rating')}</div>
                   <div className="detail_name">Capabilities</div>
                 </div>
-                <div className="detail_container">
+                <div className="rating_container">
                   <div className="detail" id="detail_rating">{calculateAverageRating(selectedProduct.opinions, 'design_rating')}</div>
                   <div className="detail_name">Design</div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { toast } from "react-hot-toast";
 
 
 const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => {
@@ -16,6 +17,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
   const handleThumbsUp = async () => {
     if (userReaction || loading) return; // User has already reacted or request in progress
 
+    if(!authToken){
+      toast.error("Login to react to an opinion");
+    }
     setLoading(true);
     try {
         const response = await axios.post('http://localhost:8000/thumbs-up', 
@@ -33,7 +37,7 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
         setUserReaction('up');
       }
     } catch (error) {
-      console.error('Error updating thumbs up:', error);
+      console.error('Error updating thumbs up');
     } finally {
       setLoading(false);
     }
@@ -41,6 +45,10 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
 
   const handleThumbsDown = async () => {
     if (userReaction || loading) return; // User has already reacted or request in progress
+
+    if(!authToken){
+      toast.error("Login to react to an opinion");
+    }
 
     setLoading(true);
     try {
@@ -59,7 +67,7 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
         setUserReaction('down');
       }
     } catch (error) {
-      console.error('Error updating thumbs down:', error);
+      console.error('Error updating thumbs down');
     } finally {
       setLoading(false);
     }

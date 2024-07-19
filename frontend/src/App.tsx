@@ -15,6 +15,7 @@ import "./Components/styles/warranties.css";
 import "./Components/styles/account.css";
 import WarrantiesContainer from './Components/Warranties/WarrantiesContainer'
 import AddProduct from './Components/Dashboard/Home/AddProduct'
+import AddWarranty from "./Components/Warranties/AddWarranty";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
     <Routes>
       <Route path="/account" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><Account /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/warranties" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><WarrantiesContainer /></LayoutWithNavbar></RequireAuth>} />
-      <Route path="/add_product" element={<RequireAuth loginPath="/add_product"><LayoutWithNavbar><AddProduct /></LayoutWithNavbar></RequireAuth>} />
+      <Route path="/add_product" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><AddProduct /></LayoutWithNavbar></RequireAuth>} />
+      <Route path="/add_warranty" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><AddWarranty /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/*" element={<LayoutWithNavbar><Home /></LayoutWithNavbar>} />
 
     {/* Trasy używające LayoutWithoutNavbar */}

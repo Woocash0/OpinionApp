@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 use App\Service\TokenAuthenticator;
+use DateTime;
 
 class OpinionController extends AbstractController
 {
@@ -118,6 +119,10 @@ class OpinionController extends AbstractController
         $opinion->setThumbsUp($data['thumbsUp'] ?? null);
         $opinion->setThumbsDown($data['thumbsDown'] ?? null);
         $opinion->setCreatedBy($user);
+        
+        $timezone = new \DateTimeZone('Europe/Warsaw');
+        $now = new \DateTime('now', $timezone);
+        $opinion->setCreatedAt($now);
 
         $opinion->setRating(sentimentAnalysisScore($data['opinionText'], "overall_rating"));
         $opinion->setDurabilityRating(sentimentAnalysisScore($data['opinionText'], "durability_rating"));
