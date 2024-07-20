@@ -6,6 +6,7 @@ import NoImage from '../../../Images/no-image.png';
 import "./productPanel.css";
 import OpinionContainer from './OpinionContainer';
 import { motion } from "framer-motion";
+import { Overflow } from 'baseui/icon';
 
 
 const ProductPanel = ({ selectedProduct, onClose }) => {
@@ -70,7 +71,7 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
           {selectedProduct && (
             <div id="info">
               <div className="detail_container" id='detail_description_container'>
-                <div className="detail" id="detail_description">{selectedProduct.description}</div>
+                <div className="detail" id="detail_description" >{selectedProduct.description}</div>
                 <div className="detail_name" id='detail_description_name'>Description</div>
               </div>
               <div className='product_ratings'>

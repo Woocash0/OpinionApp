@@ -10,6 +10,7 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [timer, setTimer] = useState(null);
   const signIn = useSignIn();
 
 
@@ -17,6 +18,8 @@ function LoginForm() {
   const location = useLocation();
   const { success } = queryString.parse(location.search); // Pobiera parametr 'success'
   const [showSuccess, setShowSuccess] = useState(success === 'true');
+
+  
 
 
   useEffect(() => {
@@ -65,15 +68,50 @@ function LoginForm() {
         }, 1000);  
       }
     } catch (err) {
-    console.error('Login Error:', err);
+        console.error('Login Error:', err);
 
+        if (err.response && err.response.data) {
+          setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
+          toast.error(err.response.data.error);
+        }
+      }
+  };
 
-    // Sprawdź, czy `response` i `response.data` istnieją przed uzyskaniem dostępu
-    if (err.response && err.response.data) {
-      setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
-      toast.error(err.response.data.error);
+  const validatePassword = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const isValid = hasUpperCase && hasNumber;
+
+    if (!isValid) {
+      setError('Password must contain at least one uppercase letter and one number.');
+    } else {
+      setError('');
     }
-  }
+
+    return isValid;
+  };
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setPassword(value);
+
+    // Clear any existing timer
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    // Validate the password
+    const isValid = validatePassword(value);
+
+    // Set a new timer to show the error after a delay
+    if (!isValid) {
+      const newTimer = setTimeout(() => {
+        toast.error(error, {
+          className: 'toast-message', // Apply the class for custom styling
+        });
+      }, 1000); // Delay in milliseconds (500ms = 0.5s)
+      setTimer(newTimer);
+    }
   };
 
   return (
@@ -106,7 +144,7 @@ function LoginForm() {
           type="password"
           placeholder="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleChange}
           className="form-control"
           autoComplete="current-password"
           required

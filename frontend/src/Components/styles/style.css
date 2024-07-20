@@ -153,6 +153,10 @@ form.login > #signup:hover {
     flex-direction: column;
   }
 
+  .toast-message {
+    font-size: 0.4em;
+  }
+
   .logo {
     margin-right: 0em;
     width: unset;
@@ -355,4 +359,9 @@ li {
 .no-valid {
   outline: none;
   background: rgba(255,0,0,0.6);
+}
+
+.email-error,
+.password-error{
+  color:white;
 }

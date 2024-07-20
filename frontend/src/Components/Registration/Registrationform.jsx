@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate  } from 'react-router-dom';
 import logo from "../images/logo.svg"
 import axios from 'axios';
@@ -11,7 +11,51 @@ function RegistrationForm() {
   const [password, setPassword] = useState('');
   const [confirmedPassword, setConfirmedPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState([]);
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [arePasswordsSame, setArePasswordsSame] = useState(true);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [confirmedPasswordTouched, setConfirmedPasswordTouched] = useState(false);
   const navigate = useNavigate();
+
+  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const validatePassword = (password) => (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password)
+  );
+  
+  useEffect(() => {
+    if (emailTouched) {
+      const timer = setTimeout(() => {
+        setIsEmailValid(validateEmail(email));
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [email, emailTouched]);
+
+  useEffect(() => {
+    if (passwordTouched) {
+      const timer = setTimeout(() => {
+        setIsPasswordValid(validatePassword(password));
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [password, passwordTouched]);
+
+  useEffect(() => {
+    if (passwordTouched && confirmedPasswordTouched) {
+      const timer = setTimeout(() => {
+        setArePasswordsSame(password === confirmedPassword);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [password, confirmedPassword, passwordTouched, confirmedPasswordTouched]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,23 +131,51 @@ function RegistrationForm() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailTouched(true);
+          }}
+          className={`form-control ${emailTouched && !isEmailValid ? 'no-valid' : ''}`}
           required
         />
+        {emailTouched && !isEmailValid && (
+          <div className="email-error">
+            Please enter a valid email address.
+          </div>
+        )}
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setPasswordTouched(true);
+          }}
+          className={`form-control ${passwordTouched && !isPasswordValid ? 'no-valid' : ''}`}
           required
         />
+        {passwordTouched && !isPasswordValid && (
+          <div className="password-error">
+            Password must be at least 8 characters long, contain an uppercase letter and a number.
+          </div>
+        )}
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmedPassword}
-          onChange={(e) => setConfirmedPassword(e.target.value)}
+          onChange={(e) => {
+            setConfirmedPassword(e.target.value);
+            setConfirmedPasswordTouched(true);
+          }}
+          className={`form-control ${confirmedPasswordTouched && !arePasswordsSame ? 'no-valid' : ''}`}
           required
         />
+         
+        {confirmedPasswordTouched && !arePasswordsSame && (
+          <div className="password-error">
+            Passwords do not match.
+          </div>
+        )}
         <button type="submit" className="btn" id="sign">
           SIGN UP
         </button>
