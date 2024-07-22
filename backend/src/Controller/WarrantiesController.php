@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\User;
 
+use App\Entity\Product;
+use App\Entity\Category;
 use App\Entity\Warranty;
 use PhpParser\Node\Expr\New_;
 use App\Form\WarrantyFormType;
 use App\Repository\UserRepository;
+use App\Service\TokenAuthenticator;
 use App\Repository\WarrantyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +18,9 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -24,13 +29,12 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
-
-use App\Service\TokenAuthenticator;
 
 
 
@@ -130,6 +134,86 @@ class WarrantiesController extends AbstractController
             }, $validWarranties),
         ], 200); // Odpowiedź z kodem 200 (OK)
     }
+
+    */
+    #[Route('/add_warranty', name: 'add_warranty', methods: ['POST'])]
+    public function addProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
+    {
+           try {
+           $user = $this->tokenAuthenticator->authenticateToken($request);
+           $data = $request->request->all();
+           $file = $request->files->get('receipt');
+
+           if($file){
+               $newFileName = uniqid() . '.' . $file->guessExtension();
+
+               try{
+                   /*$file->move(
+                       $this->getParameter('kernel.project_dir') . '/public/uploads',
+                       $newFileName
+                   );
+                   */
+                   $file->move(
+                       $this->getParameter('kernel.project_dir') . '../../frontend/src/Images/receiptImages',
+                       $newFileName
+                   );
+               } catch(FileException $e){
+                   return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+               }
+
+               $data['receipt'] = $newFileName;
+           }else{
+               $data['receipt'] = 'no-image.svg';
+           }
+
+          // Process category_id based on subsubcategory_id and subcategory_id
+          if (!empty($data['subsubcategoryId'])) {
+           $data['categoryId'] = $data['subsubcategoryId'];
+       } elseif (!empty($data['subcategory_id'])) {
+           $data['categoryId'] = $data['subcategoryId'];
+       }
+
+       // Remove subsubcategory_id and subcategory_id from data
+       unset($data['subsubcategoryId']);
+       unset($data['subcategoryId']);
+
+       // Create new Product entity and set its properties
+       $warranty = new Warranty();
+       //$warranty->setCategory($em->getRepository(Category::class)->find($data['categoryId']));
+       $warranty->setCategory($data['categoryId']);
+       $warranty->setProductName($data['productName']);
+
+       $date = new \Datetime($data['purchase_date']);
+       $warranty->setPurchaseDate($date);
+       $warranty->setWarrantyPeriod($data['warranty_period']);
+       $warranty->setIdUser($user);
+       $warranty->setReceipt($data['receipt']);
+       $warranty->setActive(True);
+
+       // Validate the Product entity
+       $errors = $validator->validate($warranty);
+
+           if (count($errors) > 0) {
+               $errorMessages = [];
+               foreach ($errors as $error) {
+                   $errorMessages[] = $error->getMessage();
+               }
+               return new JsonResponse(['error' => $errorMessages], Response::HTTP_BAD_REQUEST);
+           }
+
+           // Dodanie produktu
+           $em->persist($warranty);
+           $em->flush();
+
+           return new JsonResponse(['message' => 'Product added successfully'], Response::HTTP_CREATED);
+
+    } catch (BadCredentialsException $e) {
+        return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
+    } catch (AccessDeniedException $e) {
+        return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
+    }
+    }
+    /*
     
 
     #[Route('/add_warranty', name: 'add_warranty')]

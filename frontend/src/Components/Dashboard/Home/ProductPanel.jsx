@@ -71,7 +71,7 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
           {selectedProduct && (
             <div id="info">
               <div className="detail_container" id='detail_description_container'>
-                <div className="detail" id="detail_description" >{selectedProduct.description}</div>
+                <div className="detail" id="detail_description">{selectedProduct.description}</div>
                 <div className="detail_name" id='detail_description_name'>Description</div>
               </div>
               <div className='product_ratings'>
@@ -102,7 +102,7 @@ const ProductPanel = ({ selectedProduct, onClose }) => {
                 </div>
               </div>
               <div className="detail_container">
-                <div className="detail" id="detail_barcode"><Barcode value={selectedProduct.barcode}  height={60} width={6} fontSize={20} /></div>
+                <div className="detail" id="detail_barcode"><Barcode value={selectedProduct.barcode}  height={80} width={6} fontSize={20} /></div>
                 <div className="detail_name">EAN/GTIN</div>
               </div>
 

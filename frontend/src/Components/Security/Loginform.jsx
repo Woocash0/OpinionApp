@@ -46,7 +46,7 @@ function LoginForm() {
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: formData.email },
+        authState: { email: formData.email, token: response.data.token},
       });
 
       if (response.status === 200) {

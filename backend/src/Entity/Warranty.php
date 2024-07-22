@@ -21,7 +21,7 @@ class Warranty
 
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 2)]
+    #[Assert\Length(min: 1)]
     private ?string $category = null;
 
     #[ORM\Column(type: 'string', length: 100)]

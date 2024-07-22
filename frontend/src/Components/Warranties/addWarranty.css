@@ -1,6 +1,5 @@
 
 .warranty_add_form{
-  height: 40em;
   backdrop-filter: blur(4px);
   border-radius: 25px;
   display: flex;
@@ -16,7 +15,7 @@
 .warranty_add_form .detail_container {
     width: 100%;
     max-width: 40em;
-    height: 16%;
+    height: 7em;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -24,7 +23,7 @@
 }
 .warranty_add_form .detail {
   width: 80%;
-  height: 60%;
+  height: 50%;
   border: 0.5px solid #ffffff;
   border-radius: 25px;
   color: white;
@@ -35,6 +34,24 @@
   justify-content: center;
   letter-spacing: 3px;
 }
+.warranty_add_form .suggest{
+    width: inherit;
+    margin-top: 2%;
+    height: inherit;
+}
+
+.warranty_add_form .suggest div{
+    position: relative;
+}
+
+
+.warranty_add_form .suggest div input{
+    width: 80%;
+    margin: auto;
+    display: flex;
+    border: 0.5px solid #ffffff;
+    border-radius: 25px;
+}
 
 .warranty_add_form .detail_name {
   height: 1em;
@@ -44,12 +61,45 @@
   letter-spacing: 3px;
 }
 
+/* Stylowanie kontenera sugestii */
+.react-autosuggest__suggestions-container {
+    position: absolute;
+    color: #261132;
+    z-index: 2;
+    background-color: #ccc;
+    border-radius: 25px;
+    top: 100%; /* Ustawia kontener sugestii poniżej inputu */
+    left: 0; /* Ustawia kontener sugestii na początku kontenera */
+    width: inherit; 
+    margin: 0 5em 0 5em;/* Ustawia szerokość kontenera sugestii na 100% szerokości kontenera nadrzędnego */
+
+}
+
+.react-autosuggest__suggestions-header {
+    padding: 8px 12px;
+    color: #261132;
+    letter-spacing: 2px;
+    background-color: #ccc;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9em;
+}
+
+/* Stylowanie pojedynczej sugestii */
+.react-autosuggest__suggestion {
+    padding: 10px;
+    cursor: pointer;
+    letter-spacing: 3px;
+}
+
+/* Stylowanie podświetlonej sugestii */
+.react-autosuggest__suggestion--highlighted {
+    background-color: #ddd;
+}
+
 @media only screen and (max-device-width: 992px) {
-    .warranty_add_form {
-        height: 13em;   
-    }
     .warranty_add_form .detail_container{
         max-width: 15em;
+        height: 3em;
     }
     .warranty_add_form .detail {
         border-radius: 18px;
@@ -58,4 +108,16 @@
     .warranty_add_form .detail_name {
         font-size: 0.25em;
     }
+
+    .react-autosuggest__suggestions-header {
+        font-size: 0.25em !important;
+    }
+
+    .react-autosuggest__suggestions-container {
+        width: 60% ;
+        margin: auto;
+    }
 }
+
+
+

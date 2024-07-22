@@ -47,7 +47,7 @@ section {
 .warranties > div > img {
   height: 50%;
   width: 50%;
-  object-fit: fill;
+  object-fit: contain;
   padding-top: 3em;
   margin: auto;
 }

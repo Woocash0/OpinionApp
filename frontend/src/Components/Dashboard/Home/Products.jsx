@@ -11,7 +11,7 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
                 console.log("Products ", response.data)
             })
             .catch(error => {
-                console.error('Error fetching categories:', error);
+                console.error('Error fetching products:', error);
             });
     }, []);
 

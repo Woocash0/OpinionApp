@@ -2,6 +2,9 @@
 /.vscode
 /src/Components/Images/productImages
 /src/Components/Images/receiptImages
+/src/Images/receiptImages
+/src/Images/productImages
+
 # dependencies
 /node_modules
 /.pnp

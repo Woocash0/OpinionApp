@@ -9,6 +9,7 @@
   box-sizing: border-box;
   overflow: auto;
   align-items: flex-start !important;
+  overflow: auto;
 }
 #detail_description_container{
     height: 30% !important;
@@ -48,6 +49,8 @@
 }
 #detail_barcode{
   border: none !important;
+  margin: unset  !important;
+
   
 }
 #clock{
