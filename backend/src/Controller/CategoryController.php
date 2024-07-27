@@ -4,9 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CategoryController extends AbstractController
@@ -14,49 +13,57 @@ class CategoryController extends AbstractController
     #[Route('/categories', name: 'get_categories', methods: ['GET'])]
     public function getCategories(EntityManagerInterface $em): JsonResponse
     {
-        // Pobieranie wszystkich kategorii
         $categories = $em->getRepository(Category::class)->findAll();
-    
-        // Tworzenie mapy kategorii
+        
         $categoryMap = [];
         foreach ($categories as $category) {
-            $categoryId = $category->getId();
-            $parentId = $category->getParentCategory() ? $category->getParentCategory()->getId() : null;
-    
-            if (!isset($categoryMap[$categoryId])) {
-                $categoryMap[$categoryId] = [
-                    'id' => $categoryId,
-                    'name' => $category->getCategoryName(),
-                    'description' => $category->getDescription(),
-                    'parent' => $parentId,
-                    'children' => []
-                ];
-            } else {
-                $categoryMap[$categoryId]['name'] = $category->getCategoryName();
-                $categoryMap[$categoryId]['description'] = $category->getDescription();
-                $categoryMap[$categoryId]['parent'] = $parentId;
-            }
-    
-            if ($parentId !== null) {
-                if (!isset($categoryMap[$parentId]['children'])) {
-                    $categoryMap[$parentId]['children'] = [];
-                }
-                $categoryMap[$parentId]['children'][] = &$categoryMap[$categoryId];
-            }
+            $categoryMap[$category->getId()] = [
+                'id' => $category->getId(),
+                'name' => $category->getCategoryName(),
+                'description' => $category->getDescription(),
+                'parent' => $category->getParentCategory() ? $category->getParentCategory()->getId() : null,
+                'children' => []
+            ];
         }
-    
-        // Znalezienie kategorii głównych (bez rodziców)
+        
         $rootCategories = [];
-        foreach ($categoryMap as $category) {
-            if ($category['parent'] === null) {
-                $rootCategories[] = $category;
+        foreach ($categoryMap as $categoryId => &$category) {
+            $parentId = $category['parent'];
+            if ($parentId === null) {
+                $rootCategories[$categoryId] = &$category;
+            } else {
+                if (isset($categoryMap[$parentId])) {
+                    $categoryMap[$parentId]['children'][] = &$category;
+                } else {
+                    $categoryMap[$parentId] = [
+                        'id' => $parentId,
+                        'name' => '',
+                        'description' => '',
+                        'parent' => null,
+                        'children' => [&$category]
+                    ];
+                    $rootCategories[$parentId] = &$categoryMap[$parentId];
+                }
             }
         }
-    
-        // Zwracanie odpowiedzi w formacie JSON
-        return new JsonResponse($rootCategories);
+
+        function sortChildren(&$categories) {
+            foreach ($categories as &$category) {
+                if (!empty($category['children'])) {
+                    usort($category['children'], function ($a, $b) {
+                        return strcmp($a['name'], $b['name']);
+                    });
+                    sortChildren($category['children']);
+                }
+            }
+        }
+        
+        usort($rootCategories, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        sortChildren($rootCategories);
+
+        return new JsonResponse(array_values($rootCategories));
     }
-    
-    
-    
 }

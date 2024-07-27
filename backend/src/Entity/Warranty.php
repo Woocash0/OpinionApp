@@ -19,15 +19,6 @@ class Warranty
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 100)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 1)]
-    private ?string $category = null;
-
-    #[ORM\Column(type: 'string', length: 100)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2)]
-    private ?string $productName = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank]
@@ -54,6 +45,10 @@ class Warranty
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'warranties')]
     private Collection $tags;
 
+    #[ORM\ManyToOne(inversedBy: 'warranties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
@@ -62,30 +57,6 @@ class Warranty
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): static
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    public function getProductName(): ?string
-    {
-        return $this->productName;
-    }
-
-    public function setProductName(string $productName): static
-    {
-        $this->productName = $productName;
-
-        return $this;
     }
 
     public function getPurchaseDate(): ?\DateTimeInterface
@@ -180,6 +151,18 @@ class Warranty
     public function removeTag(Tag $tag): static
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
 
         return $this;
     }

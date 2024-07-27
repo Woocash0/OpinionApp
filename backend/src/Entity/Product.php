@@ -40,9 +40,13 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $producer = null;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Warranty::class, orphanRemoval: true)]
+    private Collection $warranties;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
+        $this->warranties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,6 +152,36 @@ class Product
     public function setProducer(string $producer): static
     {
         $this->producer = $producer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Warranty>
+     */
+    public function getWarranties(): Collection
+    {
+        return $this->warranties;
+    }
+
+    public function addWarranty(Warranty $warranty): static
+    {
+        if (!$this->warranties->contains($warranty)) {
+            $this->warranties->add($warranty);
+            $warranty->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWarranty(Warranty $warranty): static
+    {
+        if ($this->warranties->removeElement($warranty)) {
+            // set the owning side to null (unless already changed)
+            if ($warranty->getProduct() === $this) {
+                $warranty->setProduct(null);
+            }
+        }
 
         return $this;
     }

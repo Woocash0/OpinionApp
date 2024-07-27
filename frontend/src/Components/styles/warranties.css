@@ -24,12 +24,13 @@ header {
 }
 
 section {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
+  /*grid-template-columns: repeat(5, 1fr);*/
   grid-gap: 1em;
   margin: 0em 8em 0em 3em;
   overflow: auto;
   padding: 25px 25px 0px 25px;
+  flex-wrap: wrap;
 }
 
 .warranties > div {
@@ -217,17 +218,18 @@ section {
   margin-top: 0px;
   letter-spacing: 3px;
 }
-
+ /*
 @media only screen and (max-device-width: 1875px) {
-  section {
+ section {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+  */
 @media only screen and (max-device-width: 1555px) {
-  section {
+  /*section {
     grid-template-columns: repeat(3, 1fr);
   }
-
+  */
   .warranty-popup-panel, 
   .product-popup-panel {
     width: 68em;
@@ -261,10 +263,11 @@ section {
   }
 }
 @media only screen and (max-device-width: 1235px) {
+  /*
   section {
     grid-template-columns: repeat(2, 1fr);
   }
-
+  */
   .warranty-popup-panel, 
   .product-popup-panel {
     width: 58em;
@@ -347,6 +350,7 @@ section {
   }
 
   section {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 0.4em;
     margin: 0;

@@ -84,8 +84,8 @@ class WarrantiesController extends AbstractController
                 'warranties' => array_map(function ($warranty) {
                     return [
                         'id' => $warranty->getId(),
-                        'category' => $warranty->getCategory(),
-                        'productName' => $warranty->getProductName(),
+                        'category' => $warranty->getProduct()->getCategory()->getCategoryName(),
+                        'productName' =>  $warranty->getProduct()->getProductName(),
                         'purchaseDate' => $warranty->getPurchaseDate()->format('Y-m-d'), // Format daty
                         'warrantyPeriod' => $warranty->getWarrantyPeriod(),
                         'receipt' => $warranty->getReceipt(),
@@ -180,8 +180,9 @@ class WarrantiesController extends AbstractController
        // Create new Product entity and set its properties
        $warranty = new Warranty();
        //$warranty->setCategory($em->getRepository(Category::class)->find($data['categoryId']));
-       $warranty->setCategory($data['categoryId']);
-       $warranty->setProductName($data['productName']);
+       $warranty->setProduct($em->getRepository(Product::class)->findOneBy(['ProductName' => $data['productName']]));
+       //$warranty->setCategory($data['categoryId']);
+       //$warranty->setProductName($data['productName']);
 
        $date = new \Datetime($data['purchase_date']);
        $warranty->setPurchaseDate($date);

@@ -63,7 +63,7 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
     useEffect(() => {
         axios.get('http://localhost:8000/categories')
             .then(response => {
-                console.log(response);
+                console.log(response.data);
                 setRootCategories(response.data);
             })
             .catch(error => {
