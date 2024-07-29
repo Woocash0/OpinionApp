@@ -61,7 +61,9 @@ function LoginForm() {
         
         setShowSuccess(true);
         setSuccessMessage('Login successful!');
-        toast.success(response.data.message);
+        toast.success(response.data.message, {
+          className: 'react-hot-toast',
+        });
 
         setTimeout(() => {
           navigate('/'); 
@@ -72,7 +74,9 @@ function LoginForm() {
 
         if (err.response && err.response.data) {
           setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
-          toast.error(err.response.data.error);
+          toast.error(err.response.data.error, {
+            className: 'react-hot-toast',
+          });
         }
       }
   };
@@ -107,7 +111,7 @@ function LoginForm() {
     if (!isValid) {
       const newTimer = setTimeout(() => {
         toast.error(error, {
-          className: 'toast-message', // Apply the class for custom styling
+          className: 'react-hot-toast', // Apply the class for custom styling
         });
       }, 1000); // Delay in milliseconds (500ms = 0.5s)
       setTimer(newTimer);

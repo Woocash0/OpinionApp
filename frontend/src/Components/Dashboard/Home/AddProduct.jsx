@@ -85,13 +85,19 @@ function AddProduct() {
           })
         .then(response => {
             console.log('Product added successfully:', response.data);
-            toast.success('Product added successfully');
+            toast.success('Product added successfully', {
+                className: 'react-hot-toast', // Apply the class for custom styling
+              });
         })
         .catch(error => {
             if (error.response.data) {
-                toast.error(error.response.data.error + ", Check if this product already exits");
+                toast.error(error.response.data.error + ", Check if this product already exits", {
+                    className: 'react-hot-toast', // Apply the class for custom styling
+                  });
             } else {
-                toast.error('Error adding product');
+                toast.error('Error adding product', {
+                    className: 'react-hot-toast', // Apply the class for custom styling
+                  });
             }
         });
     };

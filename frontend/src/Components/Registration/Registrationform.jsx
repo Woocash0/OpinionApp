@@ -79,17 +79,23 @@ function RegistrationForm() {
       console.log(response.data); 
 
       if (response.data.success) {
-        toast.success("Registrated successfully!");
+        toast.success("Registrated successfully!", {
+          className: 'react-hot-toast',
+        });
         navigate('/loginform?success=true', {
           state: { successMessage: 'Registrated successfully!' },
         });
       } else {
         setFieldErrors(response.data.errors || []);
-        toast.error(response.data.errors);
+        toast.error(response.data.errors, {
+          className: 'react-hot-toast',
+        });
       }
     } catch (error) {
       setFieldErrors(error.response.data.errors || []);
-      toast.error(error.response.data.errors);
+      toast.error(error.response.data.errors, {
+        className: 'react-hot-toast',
+      });
     }
 
 

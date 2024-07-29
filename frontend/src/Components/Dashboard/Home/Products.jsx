@@ -8,7 +8,6 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
         axios.get('http://localhost:8000/products')
             .then(response => { 
                 setProducts(response.data);
-                console.log("Products ", response.data)
             })
             .catch(error => {
                 console.error('Error fetching products:', error);

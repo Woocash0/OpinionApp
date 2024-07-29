@@ -22,14 +22,15 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -177,10 +178,20 @@ class WarrantiesController extends AbstractController
        unset($data['subsubcategoryId']);
        unset($data['subcategoryId']);
 
+       if (!isset($data['productName'])) {
+            return new JsonResponse(['error' => 'Product name is required'], 400);
+       }
+       
+       $product_name = $em->getRepository(Product::class)->findOneBy(['ProductName' => $data['productName']]);
+       
+       if (!$product_name) {
+           throw new NotFoundHttpException('Product not found');
+       }
+
        // Create new Product entity and set its properties
        $warranty = new Warranty();
        //$warranty->setCategory($em->getRepository(Category::class)->find($data['categoryId']));
-       $warranty->setProduct($em->getRepository(Product::class)->findOneBy(['ProductName' => $data['productName']]));
+       $warranty->setProduct($product_name);
        //$warranty->setCategory($data['categoryId']);
        //$warranty->setProductName($data['productName']);
 
@@ -342,7 +353,27 @@ class WarrantiesController extends AbstractController
 
         return $this->redirectToRoute('warranties');
     }
+    */
+    
+    #[Route('/delete_warranty/{id}', name: 'delete_warranty', methods: ['DELETE'])]
+    public function deleteWarranty(Request $request, int $id, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        $warranty = $em->getRepository(Warranty::class)->find($id);
 
+        if (!$warranty) {
+            return new JsonResponse(['error' => 'Warranty not found'], 404);
+        }
+
+        $em->remove($warranty);
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Warranty deleted successfully'], 200);
+    }
+    /*
     #[Route('/search', methods: ['POST'])]
     public function search(Request $request): Response
     {

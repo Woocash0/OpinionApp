@@ -18,7 +18,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
     if (userReaction || loading) return; // User has already reacted or request in progress
 
     if(!authToken){
-      toast.error("Login to react to an opinion");
+      toast.error("Login to react to an opinion", {
+        className: 'react-hot-toast',
+      });
     }
     setLoading(true);
     try {
@@ -38,6 +40,11 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
       }
     } catch (error) {
       console.error('Error updating thumbs up');
+      
+      toast.error(error.response.data.message || 'An error occurred', {
+        className: 'react-hot-toast',
+      });
+
     } finally {
       setLoading(false);
     }
@@ -47,7 +54,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
     if (userReaction || loading) return; // User has already reacted or request in progress
 
     if(!authToken){
-      toast.error("Login to react to an opinion");
+      toast.error("Login to react to an opinion", {
+        className: 'react-hot-toast',
+      });
     }
 
     setLoading(true);
@@ -68,6 +77,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
       }
     } catch (error) {
       console.error('Error updating thumbs down');
+      toast.error(error.response.data.message || 'An error occurred', {
+        className: 'react-hot-toast',
+      });
     } finally {
       setLoading(false);
     }

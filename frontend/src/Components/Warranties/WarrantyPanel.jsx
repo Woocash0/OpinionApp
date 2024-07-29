@@ -5,10 +5,17 @@ import NoImage from '../../Images/receiptImages/no-image.png';
 import "./warrantyPanel.css";
 import { motion } from "framer-motion";
 import WarrantyTimer from './WarrantyTimer';
+import { toast } from "react-hot-toast";
+import axios from 'axios';
 
 
 const WarrantyPanel = ({ selectedWarranty, onClose }) => {
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+  const authToken = cookies.find(cookie => cookie[0] === '_auth');
+
   if (!selectedWarranty) {
     return null;
   }
@@ -25,6 +32,35 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
   const handleClose = () => {
     onClose(); // Wywołanie przekazanej funkcji onClose
     setIsReceiptVisible(false); // Resetowanie stanu isReceiptVisible
+  };
+
+  
+
+  const deleteWarranty = async () => {
+    if (!selectedWarranty || isDeleting) return;
+
+    setIsDeleting(true);
+
+    try {
+      await axios.delete(`http://localhost:8000/delete_warranty/${selectedWarranty.id}`, {
+        headers: {
+          'Authorization': `Bearer ${authToken[1]}`
+        }
+      });
+      toast.success('Warranty deleted successfully', {
+        className: 'react-hot-toast',
+      });
+      onClose();
+      setIsReceiptVisible(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting warranty:', error);
+      toast.error('Failed to delete warranty', {
+        className: 'react-hot-toast',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -63,7 +99,7 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
           )}
             </div>
             
-            <div className="delete">
+            <div className={`delete ${isDeleting ? 'disabled' : ''}`} onClick={deleteWarranty}>
               <FontAwesomeIcon icon={faTrash} className="steady" />
             </div>
             <div className="location" onClick={toggleReceiptVisibility}>

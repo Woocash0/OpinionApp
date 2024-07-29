@@ -32,7 +32,9 @@ const Account = () => {
           setUserDetails(response.data.user);
       })
       .catch(error => {
-          toast.error(error.response.data.message);
+          toast.error(error.response.data.message, {
+            className: 'react-hot-toast',
+          });
           signOut();
           navigate('/loginform');
       })
@@ -45,7 +47,9 @@ const Account = () => {
       e.preventDefault();
       signOut();
       navigate('/loginform');
-      toast.success("Logout successful");
+      toast.success("Logout successful", {
+        className: 'react-hot-toast',
+      });
   };
 
   return (

@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { AuthProvider } from "react-auth-kit";
 import { Toaster} from "react-hot-toast";
+import '../src/Components/styles/custom-toast-styles.css';
 
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

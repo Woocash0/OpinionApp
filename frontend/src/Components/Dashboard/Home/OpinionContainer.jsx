@@ -55,12 +55,16 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
           createdBy: userDetails.id
         });
 
-        toast.success("Opinion added");
+        toast.success("Opinion added", {
+          className: 'react-hot-toast',
+        });
         setOpinion('');
         window.location.reload(); // Refresh the page
       }
     } catch (error) {
-      toast.error('Error adding opinion');
+      toast.error('Error adding opinion', {
+        className: 'react-hot-toast',
+      });
     }
   };
 

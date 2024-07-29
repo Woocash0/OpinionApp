@@ -32,6 +32,11 @@
   font-size: 1.5em;
 }
 
+.delete.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 @media only screen and (max-device-width: 1555px) {
 
   #elipse .timebox {

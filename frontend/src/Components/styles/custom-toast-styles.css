@@ -1,0 +1,12 @@
+/* custom-toast-styles.css */
+
+.react-hot-toast {
+    font-family: 'Inter, Arial, sans-serif';
+  }
+  
+  
+  @media only screen and (max-device-width: 992px) {
+    .react-hot-toast {
+      font-size: 0.4em;
+    }
+}

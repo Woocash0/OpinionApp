@@ -40,16 +40,19 @@ const Warranties = ({ onSelectWarranty }) => {
             })
             .then(response => {
                 setWarranties(Array.isArray(response.data.warranties) ? response.data.warranties : []);
-                console.log(response.data.warranties);
             })
             .catch(error => {
-                toast.error("Error getting warranties", error.response.data.message);
+                toast.error("Error getting warranties", error.response.data.message, {
+                    className: 'react-hot-toast',
+                  });
                 setWarranties([]);
             })
 
         })
         .catch(error => {
-            toast.error("Authorization Error", error.response.data.message);
+            toast.error("Authorization Error", error.response.data.message, {
+                className: 'react-hot-toast',
+              });
             signOut();
             navigate('/loginform');
         })

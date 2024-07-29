@@ -164,13 +164,20 @@ function AddWarranty() {
         })
         .then(response => {
             console.log('Warranty added successfully:', response.data);
-            toast.success('Warranty added successfully');
+            toast.success('Warranty added successfully', {
+                className: 'react-hot-toast',
+              });
+            navigate('/warranties');
         })
         .catch(error => {
             if (error.response.data) {
-                toast.error(error.response.data.error + ", Check if this warranty already exists");
+                toast.error(error.response.data.error + ", Check if this warranty already exists", {
+                    className: 'react-hot-toast',
+                  });
             } else {
-                toast.error('Error adding warranty');
+                toast.error('Error adding warranty', {
+                    className: 'react-hot-toast',
+                  });
             }
         });
     };
