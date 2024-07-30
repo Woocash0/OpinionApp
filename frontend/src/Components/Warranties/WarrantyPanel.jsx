@@ -7,11 +7,13 @@ import { motion } from "framer-motion";
 import WarrantyTimer from './WarrantyTimer';
 import { toast } from "react-hot-toast";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 const WarrantyPanel = ({ selectedWarranty, onClose }) => {
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
   const authToken = cookies.find(cookie => cookie[0] === '_auth');
@@ -63,6 +65,10 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
     }
   };
 
+  const handleEditClick = () => {
+    navigate(`/edit_warranty/${selectedWarranty.id}`);
+  };
+
   return (
     <motion.div
     initial={{ opacity: 0 }}
@@ -82,7 +88,7 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
               <FontAwesomeIcon icon={faXmark} className="steady" />
             </div>
              
-            <div className="edit">
+            <div className="edit" onClick={handleEditClick}>
               <FontAwesomeIcon icon={faPenToSquare} className="steady" />
             </div>
             
@@ -108,25 +114,25 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
             
           </div>
             <div id="info">
-                <div class="detail_container">
-                    <div class="detail" id="detail_category">{selectedWarranty.category}</div>
-                    <div class="detail_name">Category</div>
+                <div className="detail_container">
+                    <div className="detail" id="detail_category">{selectedWarranty.category}</div>
+                    <div className="detail_name">Category</div>
                 </div>
-                <div class="detail_container">
-                    <div class="detail" id="detail_product_name">{selectedWarranty.productName}</div>
-                    <div class="detail_name">Product Name</div>
+                <div className="detail_container">
+                    <div className="detail" id="detail_product_name">{selectedWarranty.productName}</div>
+                    <div className="detail_name">Product Name</div>
                 </div>
-                <div class="detail_container">
-                    <div class="detail" id="detail_purchase_date">{selectedWarranty.purchaseDate}</div>
-                    <div class="detail_name">Purchase Date</div>
+                <div className="detail_container">
+                    <div className="detail" id="detail_purchase_date">{selectedWarranty.purchaseDate}</div>
+                    <div className="detail_name">Purchase Date</div>
                 </div>
-                <div class="detail_container">
-                    <div class="detail" id="detail_warranty_period">{selectedWarranty.warrantyPeriod} {warrantyYears}</div>
-                    <div class="detail_name">Warranty Period</div>
+                <div className="detail_container">
+                    <div className="detail" id="detail_warranty_period">{selectedWarranty.warrantyPeriod} {warrantyYears}</div>
+                    <div className="detail_name">Warranty Period</div>
                 </div>
-                <div class="detail_container">
-                    <div class="detail" id="detail_tags">{selectedWarranty.tags}</div>
-                    <div class="detail_name">Tags</div>
+                <div className="detail_container">
+                    <div className="detail" id="detail_tags">{selectedWarranty.tags}</div>
+                    <div className="detail_name">Tags</div>
                 </div>
             </div>
           </div>

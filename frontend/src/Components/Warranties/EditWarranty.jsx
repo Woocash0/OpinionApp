@@ -4,11 +4,9 @@ import "../Dashboard/Home/addProduct.css";
 import "./addWarranty.css";
 import Autosuggest from 'react-autosuggest';
 import { toast } from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
-import { useSignOut } from 'react-auth-kit';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
 
-// Funkcja do pobierania sugestii
 const getSuggestions = (value, products) => {
     const inputValue = value.toLowerCase();
     const inputLength = inputValue.length;
@@ -18,14 +16,12 @@ const getSuggestions = (value, products) => {
     );
 };
 
-// Funkcja do renderowania pojedynczej sugestii
 const renderSuggestion = suggestion => (
     <div className="react-autosuggest__suggestion">
         {suggestion.productName}
     </div>
 );
 
-// Funkcja do renderowania kontenera sugestii z nagłówkiem
 const renderSuggestionsContainer = ({ containerProps, children }) => (
     <div {...containerProps} className="react-autosuggest__suggestions-container">
         <div className="react-autosuggest__suggestions-header">
@@ -35,7 +31,7 @@ const renderSuggestionsContainer = ({ containerProps, children }) => (
     </div>
 );
 
-function AddWarranty() {
+function EditWarranty() {
     const [formData, setFormData] = useState({
         categoryId: '',
         subcategoryId: '',
@@ -56,28 +52,52 @@ function AddWarranty() {
     const [value, setValue] = useState('');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const signOut = useSignOut();
+    const { warrantyId } = useParams(); // Get the warranty ID from the URL params
 
     useEffect(() => {
+        // Fetch categories
         axios.get('http://localhost:8000/categories')
             .then(response => {
-                console.log('Categories:', response.data); // Debugging
                 setCategories(response.data);
             })
             .catch(error => {
                 console.error('Error fetching categories:', error);
             });
 
+        // Fetch products
         axios.get('http://localhost:8000/products')
             .then(response => {
-                console.log('Products:', response.data); // Debugging
                 setProducts(response.data);
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
+            });
+
+            axios.get(`http://localhost:8000/warranty/${warrantyId}`, {
+                headers: {
+                  'Authorization': `Bearer ${document.cookie.split(';').map(cookie => cookie.trim().split('=')).find(cookie => cookie[0] === '_auth')[1]}`
+                }
+              })
+            .then(response => {
+                const warranty = response.data;
+                setFormData({
+                    categoryId: warranty.categoryId || '',
+                    subcategoryId: warranty.subcategoryId || '',
+                    subsubcategoryId: warranty.subsubcategoryId || '',
+                    productName: warranty.productName || '',
+                    purchase_date: warranty.purchase_date || '',
+                    warranty_period: warranty.warranty_period || '',
+                    user_id: warranty.user_id || '',
+                    receipt: null
+                });
+                setValue(warranty.productName || '');
+                setLoading(false);
+                console.log(formData);
             })
-            .finally(() => setLoading(false));
-    }, []);
+            .catch(error => {
+                console.error('Error fetching warranty:', error);
+            });
+    }, [warrantyId]);
 
     useEffect(() => {
         const { categoryId, subcategoryId, subsubcategoryId } = formData;
@@ -89,22 +109,18 @@ function AddWarranty() {
         setFilteredProducts(filtered);
     }, [formData, products]);
 
-    // Funkcja obsługująca zmianę wartości w polu autouzupełniania
     const onChange = (event, { newValue }) => {
         setValue(newValue);
     };
 
-    // Funkcja obsługująca pobieranie sugestii
     const onSuggestionsFetchRequested = ({ value }) => {
         setSuggestions(getSuggestions(value, filteredProducts));
     };
 
-    // Funkcja obsługująca czyszczenie sugestii
     const onSuggestionsClearRequested = () => {
         setSuggestions([]);
     };
 
-    // Funkcja obsługująca wybór sugestii
     const onSuggestionSelected = (event, { suggestion }) => {
         setFormData({ ...formData, productName: suggestion.productName });
         setValue(suggestion.productName);
@@ -153,31 +169,30 @@ function AddWarranty() {
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null && value !== '') {
                 formDataToSend.append(key, value);
+                console.log(key, value);
             }
         });
-
-        console.log("Data to add ", formDataToSend);
-        axios.post('http://localhost:8000/add_warranty', formDataToSend, {
+        console.log("Data to edit ", formDataToSend);
+        axios.post(`http://localhost:8000/edit_warranty/${warrantyId}`, formDataToSend, {
             headers: {
                 'Authorization': `Bearer ${document.cookie.split(';').map(cookie => cookie.trim().split('=')).find(cookie => cookie[0] === '_auth')[1]}`
             }
         })
         .then(response => {
-            console.log('Warranty added successfully:', response.data);
-            toast.success('Warranty added successfully', {
+            toast.success('Warranty updated successfully', {
                 className: 'react-hot-toast',
-              });
+            });
             navigate('/warranties');
         })
         .catch(error => {
             if (error.response.data) {
                 toast.error(error.response.data.error + ", Check if this warranty already exists", {
                     className: 'react-hot-toast',
-                  });
+                });
             } else {
-                toast.error('Error adding warranty', {
+                toast.error('Error updating warranty', {
                     className: 'react-hot-toast',
-                  });
+                });
             }
         });
     };
@@ -194,7 +209,7 @@ function AddWarranty() {
 
     return (
         <>
-            <header>Add Warranty</header>
+            <header>Edit Warranty</header>
             <form onSubmit={handleSubmit}>
                 <div className="warranty_add_form">
                     <div className="detail_container">
@@ -262,11 +277,11 @@ function AddWarranty() {
                         <input type="file" name="receipt" className="detail" onChange={handleFileChange} />
                         <div className="detail_name">Receipt</div>
                     </div>
-                    <button type="submit" id="addButton">ADD</button>
+                    <button type="submit" id="addButton">Update</button>
                 </div>
             </form>
         </>
     );
 }
 
-export default AddWarranty;
+export default EditWarranty;

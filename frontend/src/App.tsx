@@ -11,6 +11,7 @@ import  Account  from "./Components/Dashboard/Account/Account";
 import  WarrantiesContainer from './Components/Warranties/WarrantiesContainer'
 import  AddProduct from './Components/Dashboard/Home/AddProduct'
 import  AddWarranty from "./Components/Warranties/AddWarranty";
+import  EditWarranty from "./Components/Warranties/EditWarranty";
 import { LayoutWithNavbar, LayoutWithoutNavbar } from './Layout';
 import "./App.css";
 import "./Components/styles/style.css";
@@ -26,6 +27,8 @@ function App() {
       <Route path="/warranties" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><WarrantiesContainer /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/add_product" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><AddProduct /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/add_warranty" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><AddWarranty /></LayoutWithNavbar></RequireAuth>} />
+      <Route path="/edit_warranty/:warrantyId" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><EditWarranty /></LayoutWithNavbar></RequireAuth>} />
+      
 
       <Route path="/*" element={<LayoutWithNavbar><Home /></LayoutWithNavbar>} />
 

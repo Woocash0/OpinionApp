@@ -35,7 +35,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
         setUserEmail(response.data.user.email);
         setLoading(false); // Ustawienie loading na false po pobraniu danych
       }).catch(error => {
-        console.error('Error fetching user details:', error);
         setLoading(false); // Ustawienie loading na false w przypadku błędu
       });
     } else {
@@ -111,6 +110,8 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
             placeholder="What is your opinion about this product?"
             value={opinion}
             onChange={(e) => setOpinion(e.target.value)}
+            id="opinionInput"
+            name="opinion"
           />
           <button type="submit" className="add-opinion-button">Comment</button>
         </form>

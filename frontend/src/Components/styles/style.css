@@ -328,6 +328,8 @@ nav > ul > li > .button {
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
+  background-color: transparent;
+  border: none;
 }
 .nav-text{
   padding-left: 0.4vw;

@@ -27,9 +27,9 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\DependencyInjection\Loader\Configurator\validator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
-
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -103,6 +103,35 @@ class WarrantiesController extends AbstractController
             return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
         }
     }
+
+    #[Route('/warranty/{id}', name: 'get_warranty', methods:['GET'])]
+    public function getWarranty(Request $request, EntityManagerInterface $em, int $id): JsonResponse
+    {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        $warranty = $em->getRepository(Warranty::class)->find($id);
+        if (!$warranty) {
+            return new JsonResponse(['error' => 'Warranty not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if($user !== $warranty->getIdUser()){
+            return new JsonResponse(['error' => 'You do not have permission to access or modify this warranty.'], Response::HTTP_FORBIDDEN);
+        }
+
+        return new JsonResponse([
+            'id' => $warranty->getId(),
+            'categoryId' => $warranty->getProduct()->getCategory()->getId(),
+            'productName' => $warranty->getProduct()->getProductName(),
+            'purchase_date' => $warranty->getPurchaseDate()->format('Y-m-d'),
+            'warranty_period' => $warranty->getWarrantyPeriod(),
+            'user_id' => $warranty->getIdUser(),
+            'receipt' => $warranty->getReceipt()
+        ]);
+    }
+
+
 
 
 /*
@@ -341,8 +370,83 @@ class WarrantiesController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    */
+    #[Route('/edit_warranty/{id}', name: 'edit_warranty', methods:["POST"])]
+    public function updateWarranty(Request $request, EntityManagerInterface $em, int $id, ValidatorInterface $validator): JsonResponse
+    {
+        // Odczytanie danych z request
+        $data = $request->request->all();
+        error_log("Parsed Data: " . print_r($data, true));
 
+        $receipt = $request->files->get('receipt');
+        error_log("Receipt: " . print_r($receipt, true));
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
 
+        // Find the warranty
+        $warranty = $em->getRepository(Warranty::class)->find($id);
+
+        if (!$warranty) {
+            return new JsonResponse(['error' => 'Warranty not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Check if the user is the owner of the warranty
+        if($user !== $warranty->getIdUser()){
+            return new JsonResponse(['error' => 'You do not have permission to access or modify this warranty.'], Response::HTTP_FORBIDDEN);
+        }
+
+        if (isset($data['productName'])){
+            $product_name = $em->getRepository(Product::class)->findOneBy(['ProductName' => $data['productName']]);
+            $warranty->setProduct($product_name);
+        }
+        if (isset($data['purchase_date'])) $warranty->setPurchaseDate(new \DateTime($data['purchase_date']));
+        if (isset($data['warranty_period'])) {
+            $warranty->setWarrantyPeriod($data['warranty_period']);
+        }
+        
+        // Handle file upload
+
+        if (isset($receipt)){
+            // Remove old file if exists
+            if ($warranty->getReceipt()) {
+                $oldFile = $this->getParameter('kernel.project_dir') . '../../frontend/src/Images/receiptImages/' . $warranty->getReceipt();
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+            // Save new file
+            $newFileName = uniqid() . '.' . $receipt->guessExtension();
+            try {
+                $receipt->move(
+                    $this->getParameter('kernel.project_dir') . '../../frontend/src/Images/receiptImages',
+                    $newFileName
+                );
+            } catch (FileException $e) {
+                return new JsonResponse(['error' => 'Failed to upload file: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+            $warranty->setReceipt($newFileName);
+        }
+
+        $errors = $validator->validate($warranty);
+
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+            return new JsonResponse(['error' => $errorMessages], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Save changes
+        $em->persist($warranty);
+        $em->flush();
+
+        return new JsonResponse(['success' => 'Warranty updated successfully'], Response::HTTP_OK);
+    }
+
+    /*
     #[Route('/delete_warranty/{id}', methods:['GET','DELETE'], name: 'delete_warranty')]
     public function deleteWarranty($id): Response {
 
@@ -366,6 +470,13 @@ class WarrantiesController extends AbstractController
 
         if (!$warranty) {
             return new JsonResponse(['error' => 'Warranty not found'], 404);
+        }
+
+        if ($warranty->getReceipt()) {
+            $oldFile = $this->getParameter('kernel.project_dir') . '../../frontend/src/Images/receiptImages/' . $warranty->getReceipt();
+            if (file_exists($oldFile)) {
+                unlink($oldFile);
+            }
         }
 
         $em->remove($warranty);
