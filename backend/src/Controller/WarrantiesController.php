@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\New_;
 use App\Form\WarrantyFormType;
 use App\Repository\UserRepository;
 use App\Service\TokenAuthenticator;
+use App\Repository\ProductRepository;
 use App\Repository\WarrantyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,6 +43,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderToken
 class WarrantiesController extends AbstractController
 {
     private $warrantyRepository;
+    private $productRepository;
     private $userRepository;
     private $em;
     private $jwtManager;
@@ -49,9 +51,10 @@ class WarrantiesController extends AbstractController
     private $jwtEncoder;
     private $tokenAuthenticator;
 
-    public function __construct(WarrantyRepository $warrantyRepository, UserRepository $userRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder, TokenAuthenticator $tokenAuthenticator)
+    public function __construct(WarrantyRepository $warrantyRepository, ProductRepository $productRepository, UserRepository $userRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder, TokenAuthenticator $tokenAuthenticator)
     {
         $this->warrantyRepository = $warrantyRepository;
+        $this->productRepository = $productRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->jwtManager = $jwtManager;
@@ -484,39 +487,39 @@ class WarrantiesController extends AbstractController
 
         return new JsonResponse(['message' => 'Warranty deleted successfully'], 200);
     }
-    /*
+
     #[Route('/search', methods: ['POST'])]
     public function search(Request $request): Response
     {
+        // Logowanie zawartości requestu
+        error_log('Request Content: ' . $request->getContent());
+    
         $content = json_decode($request->getContent(), true);
-
+    
+        // Sprawdzenie czy parametr 'search' istnieje
         if (!isset($content['search'])) {
             return $this->json(['error' => 'Invalid request'], 400);
         }
-
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $searchString = '%'.strtolower($content['search']).'%';
-
-        $query = $this->warrantyRepository->createQueryBuilder('w')
-            ->andWhere('w.idUser = :id')
-            ->andWhere('LOWER(w.category) LIKE :search OR LOWER(w.productName) LIKE :search')
-            ->setParameter('id', $user->getId())
+    
+        $searchString = '%' . strtolower($content['search']) . '%';
+    
+        ini_set('memory_limit', '1024M');
+        // Utworzenie zapytania
+        $query = $this->productRepository->createQueryBuilder('p')
+            ->andWhere('LOWER(p.producer) LIKE :search OR LOWER(p.ProductName) LIKE :search')
             ->setParameter('search', $searchString)
             ->getQuery();
 
         $searched = $query->getResult();
-        
-        return $this->json(
-            $searched,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
-        );
+    
+        // Logowanie wyników wyszukiwania
+        error_log('Search Results: ' . print_r($searched, true));
+    
+        // Zwrócenie wyników jako JSON
+        return $this->json($searched);
     }
 
+    /*
     #[Route('/archive', methods:['GET'], name: 'archive')]
     public function archive(Security $security): Response
     {

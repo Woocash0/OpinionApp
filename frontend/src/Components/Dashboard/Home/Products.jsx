@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import AddButton from '../../images/add_button.svg';
+import SearchNavItem from './SearchNavItem';
 
 const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) => {
     const [products, setProducts] = useState([]);
+    const [searchedProducts, setSearchedProducts] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8000/products')
@@ -14,14 +19,39 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
             });
     }, []);
 
+    const handleSearchResults = (results) => {
+        setSearchedProducts(results);
+        setIsSearching(true);
+    };
 
-    const filteredProducts = selectedCategory
+    const handleClearSearch = () => {
+        setIsSearching(false);
+    };
+
+    const filteredProducts = (selectedCategory
         ? products.filter(product => product.categoryId === selectedCategory)
-        : products;
+        : products);
+
+    const showProducts = isSearching ? searchedProducts : filteredProducts;
 
     return (
         <>
-            <header>{selectedCategoryName ? `Products: ${selectedCategoryName}` : "Products"}</header>
+            <div className='header_container'>
+                <header>
+                    {selectedCategoryName ? `Products: ${selectedCategoryName}` : "Products"}
+                </header>
+                <span className='search_add'>
+                    <SearchNavItem 
+                        products={products}
+                        onSearchResults={handleSearchResults}
+                        onClearSearch={handleClearSearch}
+                    />
+                    <Link to="/add_product" className="add_product_button">
+                        <img src={AddButton} alt="Add Product" />
+                    </Link>
+                </span>
+            </div>
+            
             <section className="warranties">
                 {filteredProducts.map(product => (
                     <div className="warranty_box" key={product.id} onClick={() => onSelectProduct(product)}>

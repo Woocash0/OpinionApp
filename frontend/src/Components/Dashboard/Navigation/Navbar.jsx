@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faBoxArchive, faUser, faTags, faSquarePlus, faRankingStar } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../images/logo_color.svg';
@@ -9,10 +9,9 @@ const Navbar = () => {
     <nav>
       <img src={logo} alt="Logo" />
       <ul>
-        <NavItem icon={faTags} link="/" text="Home" />
+        <NavItem icon={faTags} link="/" text="Products" />
         <NavItem icon={faRankingStar} link="/ranking" text="Ranking" />
-        <NavItem icon={faSquarePlus} link="/add_product" text="Add Product" />
-        <NavItem icon={faBoxArchive} link="/warranties" text="Warranties" />
+        <NavItem icon={faBoxArchive} link="/warranties" text="My warranties" />
         <NavItem icon={faUser} link="/account" text="My account" />
         
         {/*
@@ -40,19 +39,6 @@ const NavItem = ({ icon, link, text }) => {
         <FontAwesomeIcon icon={icon} bounce className="animated" />
         <span className="nav-text">{text}</span>
       </button>
-    </li>
-  );
-};
-
-const SearchNavItem = () => {
-  return (
-    <li id="search_block">
-      <a href="#" className="button" id="search_button">
-      <FontAwesomeIcon icon={faMagnifyingGlass} className="steady" />
-      <FontAwesomeIcon icon={faMagnifyingGlass} bounce className="animated" />
-      <span className="nav-text">Search</span>
-      <input id="searchbar" type="text" placeholder="search" style={{ display: 'none' }} />
-      </a>
     </li>
   );
 };

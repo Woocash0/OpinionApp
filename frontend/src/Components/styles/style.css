@@ -144,8 +144,8 @@ form.login > #signup:hover {
 
 #searchbar{
   margin: 0 0 0 1em;
-  height: 36px;
-  width: 61%;
+  height: 65%;
+  width: 15em;
   outline: none;
 }
 
@@ -188,12 +188,13 @@ form.login > #signup:hover {
 
   #searchbar {
     position: fixed;
-    top: 7%;
+    top: 10%;
     left: 50%;
     transform: translate(-50%, -50%);
     height: 4em ;
     font-size: 16px;
     margin: 0;
+    border: #076478 4px solid;
   }
 }
 
@@ -298,6 +299,15 @@ li:hover i#animated,
   display: flex;
   align-items: center;
 }
+#search_block{
+  justify-content: flex-end;
+  
+}
+#search_block .steady,
+#search_block .animated{
+  color: white;
+  margin-left: 1em;
+}
 
 .steady {
   display: inline-block;
@@ -356,6 +366,11 @@ li {
   .nav-text {
     display: none;
   }
+
+  #search_block .steady,
+  #search_block .animated{
+    margin-left: 0.4em;
+}
   
 }
 

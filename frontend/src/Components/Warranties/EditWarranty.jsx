@@ -172,7 +172,6 @@ function EditWarranty() {
                 console.log(key, value);
             }
         });
-        console.log("Data to edit ", formDataToSend);
         axios.post(`http://localhost:8000/edit_warranty/${warrantyId}`, formDataToSend, {
             headers: {
                 'Authorization': `Bearer ${document.cookie.split(';').map(cookie => cookie.trim().split('=')).find(cookie => cookie[0] === '_auth')[1]}`

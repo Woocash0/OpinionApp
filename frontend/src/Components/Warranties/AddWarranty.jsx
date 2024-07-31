@@ -156,7 +156,6 @@ function AddWarranty() {
             }
         });
 
-        console.log("Data to add ", formDataToSend);
         axios.post('http://localhost:8000/add_warranty', formDataToSend, {
             headers: {
                 'Authorization': `Bearer ${document.cookie.split(';').map(cookie => cookie.trim().split('=')).find(cookie => cookie[0] === '_auth')[1]}`
