@@ -6,25 +6,21 @@ import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
 import { toast } from 'react-hot-toast';
 import Loading from '../Loading';
+import { motion } from "framer-motion";
 
 const Warranties = ({ onSelectWarranty }) => {
     const [warranties, setWarranties] = useState([]);
-    const [currentDate, setCurrentDate] = useState(new Date());
     const [loading, setLoading] = useState(true); // Dodaj stan do śledzenia ładowania
     const signOut = useSignOut();
     const navigate = useNavigate();
+    const currentDate = new Date();
 
     useEffect(() => {
-        setCurrentDate(new Date());
-
-        // Pobranie autoryzacji z ciasteczek
         const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
         const authToken = cookies.find(cookie => cookie[0] === '_auth');
-
-        // Ustawienie stanu ładowania na true przed rozpoczęciem pobierania danych
+    
         setLoading(true);
-
-        // Pobranie danych użytkownika
+    
         axios.get('http://localhost:8000/account', {
             headers: {
                 'Authorization': `Bearer ${authToken[1]}`
@@ -32,7 +28,6 @@ const Warranties = ({ onSelectWarranty }) => {
         })
         .then(response => {
             const userEmail = response.data.user.email;
-            // Pobranie gwarancji dla użytkownika
             axios.get('http://localhost:8000/warranties', {
                 params: {
                     owner: userEmail
@@ -47,7 +42,10 @@ const Warranties = ({ onSelectWarranty }) => {
                   });
                 setWarranties([]);
             })
-
+            .finally(() => {
+                setLoading(false);
+            });
+    
         })
         .catch(error => {
             toast.error("Authorization Error", error.response.data.message, {
@@ -55,43 +53,60 @@ const Warranties = ({ onSelectWarranty }) => {
               });
             signOut();
             navigate('/loginform');
-        })
-        .finally(() => {
-            setLoading(false);
         });
     }, []);
+
+    const calculateExpirationDate = (purchaseDate, warrantyPeriod) => {
+        const purchase = new Date(purchaseDate);
+        purchase.setFullYear(purchase.getFullYear() + warrantyPeriod);
+        return purchase;
+    };
+
+    const activeWarranties = warranties.filter(warranty => {
+        const expirationDate = calculateExpirationDate(warranty.purchaseDate, warranty.warrantyPeriod);
+        return expirationDate > currentDate;
+    });
+
+    const inactiveWarranties = warranties.filter(warranty => {
+        const expirationDate = calculateExpirationDate(warranty.purchaseDate, warranty.warrantyPeriod);
+        return expirationDate <= currentDate;
+    });
 
     if (loading) {
         return <Loading />; 
     }
 
     return (
-        <>
+        <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 1.3 }}
+    >
             <Link to="/add_warranty" className="add_button">
                 <img src={AddButton} alt="Add Warranty" />
             </Link>
 
-            <header>Active warranties ({warranties.length})</header>
+            <header>Active warranties ({activeWarranties.length})</header>
             <section className="warranties">
-                {Array.isArray(warranties) && warranties.map(warranty => (
+                {Array.isArray(activeWarranties) && activeWarranties.map(warranty => (
                     <div className="warranty_box" key={warranty.id} onClick={() => onSelectWarranty(warranty)}>
-                        <img src={require(`../../Images/iconImages/${warranty.category}.svg`)}  alt={warranty.product_name} />
-                        <div className="imgname">{`${warranty.category}`}</div>
-                        <div className="hidden_details" style={{ display: 'none' }}>
-                            <div id="productName">{warranty.product_name}</div>
-                            <div id="purchaseDate">{warranty.purchase_date}</div>
-                            <div id="warrantyPeriod">{warranty.warranty_period}</div>
-                            <div id="receipt">{warranty.receipt}</div>
-                            <div id="tags">
-                                {/*warranty.tags.map(tag => (
-                                    <div key={tag.id}>{tag.name}</div>
-                                ))*/}
-                            </div>
-                        </div>
+                        <img src={require(`../../Images/iconImages/${warranty.category}.svg`)} alt={warranty.product_name} />
+                        <div className="imgname">{warranty.category}</div>
                     </div>
                 ))}
             </section>
-        </>
+
+            <header>Expired warranties ({inactiveWarranties.length})</header>
+            <section className="warranties">
+                {Array.isArray(inactiveWarranties) && inactiveWarranties.map(warranty => (
+                    <div className="warranty_box" key={warranty.id} onClick={() => onSelectWarranty(warranty)}>
+                        <img src={require(`../../Images/iconImages/${warranty.category}.svg`)} alt={warranty.product_name} />
+                        <div className="imgname">{warranty.category}</div>
+                    </div>
+                ))}
+            </section>
+        </motion.div>
     );
 };
 

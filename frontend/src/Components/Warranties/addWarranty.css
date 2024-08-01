@@ -61,6 +61,31 @@
   letter-spacing: 3px;
 }
 
+.warranty_add_form #warranty_form_tags{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around !important;
+    border: none;
+    margin: auto;
+    max-width: 32em;
+}
+
+#warranty_form_tags label{
+    border: 1px solid teal;
+    border-radius: 25px;
+    padding: 8px;
+    margin: 0 8px 0 8px;
+    color: teal;
+}
+
+#warranty_form_tags input[type="checkbox"]{
+    display: none;
+}
+#warranty_form_tags input[type="checkbox"]:checked + label {
+    color: white;
+    border-color: white;
+}
+
 /* Stylowanie kontenera sugestii */
 .react-autosuggest__suggestions-container {
     position: absolute;

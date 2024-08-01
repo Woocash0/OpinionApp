@@ -21,6 +21,9 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
 
     const handleSearchResults = (results) => {
         setSearchedProducts(results);
+    };
+
+    const handleShowSearch = () => {
         setIsSearching(true);
     };
 
@@ -38,13 +41,14 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
         <>
             <div className='header_container'>
                 <header>
-                    {selectedCategoryName ? `Products: ${selectedCategoryName}` : "Products"}
+                  {isSearching ? ('Searching:') : (selectedCategoryName ? `Products: ${selectedCategoryName}` : "Products")}
                 </header>
                 <span className='search_add'>
                     <SearchNavItem 
                         products={products}
                         onSearchResults={handleSearchResults}
                         onClearSearch={handleClearSearch}
+                        onShowSearch={handleShowSearch}
                     />
                     <Link to="/add_product" className="add_product_button">
                         <img src={AddButton} alt="Add Product" />
@@ -53,7 +57,7 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
             </div>
             
             <section className="warranties">
-                {filteredProducts.map(product => (
+                {showProducts.map(product => (
                     <div className="warranty_box" key={product.id} onClick={() => onSelectProduct(product)}>
                         <img src={require(`../../../Images/productImages/${product.image}`)} alt={product.productName} />
                         <div className="imgname">{product.productName}</div>

@@ -6,6 +6,7 @@ import Autosuggest from 'react-autosuggest';
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../Loading';
+import { motion } from "framer-motion";
 
 const getSuggestions = (value, products) => {
     const inputValue = value.toLowerCase();
@@ -40,7 +41,8 @@ function EditWarranty() {
         purchase_date: '',
         warranty_period: '',
         user_id: '',
-        receipt: null
+        receipt: null,
+        tags: []
     });
 
     const [categories, setCategories] = useState([]);
@@ -48,6 +50,8 @@ function EditWarranty() {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [subsubcategories, setSubsubcategories] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [value, setValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -63,6 +67,14 @@ function EditWarranty() {
             .catch(error => {
                 console.error('Error fetching categories:', error);
             });
+        
+        axios.get('http://localhost:8000/tags')
+        .then(response => {
+            setTags(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching tags:', error);
+        });
 
         // Fetch products
         axios.get('http://localhost:8000/products')
@@ -88,11 +100,12 @@ function EditWarranty() {
                     purchase_date: warranty.purchase_date || '',
                     warranty_period: warranty.warranty_period || '',
                     user_id: warranty.user_id || '',
+                    tags: warranty.tags || '',
                     receipt: null
                 });
                 setValue(warranty.productName || '');
+                setSelectedTags(warranty.tags || []); 
                 setLoading(false);
-                console.log(formData);
             })
             .catch(error => {
                 console.error('Error fetching warranty:', error);
@@ -160,6 +173,25 @@ function EditWarranty() {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setFormData({ ...formData, receipt: file });
+    };
+
+    const handleTagChange = (e) => {
+        const tag = e.target.value;
+        const isChecked = e.target.checked;
+    
+        setSelectedTags(prevTags => {
+            const updatedTags = isChecked
+                ? [...prevTags, tag]
+                : prevTags.filter(t => t !== tag);
+            
+            // Aktualizujemy formData.tags
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                tags: updatedTags
+            }));
+    
+            return updatedTags;
+        });
     };
 
     const handleSubmit = (e) => {
@@ -275,6 +307,25 @@ function EditWarranty() {
                     <div className="detail_container">
                         <input type="file" name="receipt" className="detail" onChange={handleFileChange} />
                         <div className="detail_name">Receipt</div>
+                    </div>
+                    <div className="detail_container">
+                        <div id="warranty_form_tags">
+                            {tags.map(tag => (
+                                <React.Fragment key={tag.id}>
+                                    <input
+                                        type="checkbox"
+                                        id={`tag-${tag.id}`}
+                                        value={tag.name}
+                                        checked={selectedTags.includes(tag.name)} // Use selectedTags to determine if checked
+                                        onChange={handleTagChange}
+                                    />
+                                    <label htmlFor={`tag-${tag.id}`}>
+                                        {tag.name}
+                                    </label>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                        <div className="detail_name">Tags</div>
                     </div>
                     <button type="submit" id="addButton">Update</button>
                 </div>

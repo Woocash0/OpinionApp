@@ -52,7 +52,7 @@ option{
     margin: 0 2em 0 2em;
 }
 
-#info #warranty_form_tags{
+.warranty_add_form #warranty_form_tags{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around !important;
@@ -72,7 +72,6 @@ option{
 #warranty_form_tags input[type="checkbox"]:checked + label {
     color: white;
     border-color: white;
-    
 }
 
 @media only screen and (max-device-width: 992px) {

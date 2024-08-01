@@ -7,7 +7,6 @@ const WarrantiesContainer = () => {
   const [selectedWarranty, setSelectedWarranty] = useState(null);
 
   const handleWarrantySelect = (warranty) => {
-    console.log(warranty);
     setSelectedWarranty(warranty);
   };
 

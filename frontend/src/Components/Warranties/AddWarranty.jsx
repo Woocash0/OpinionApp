@@ -44,7 +44,8 @@ function AddWarranty() {
         purchase_date: '',
         warranty_period: '',
         user_id: '',
-        receipt: null
+        receipt: null,
+        tags: []
     });
 
     const [categories, setCategories] = useState([]);
@@ -52,6 +53,8 @@ function AddWarranty() {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [subsubcategories, setSubsubcategories] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [value, setValue] = useState('');
     const [loading, setLoading] = useState(true);
@@ -61,7 +64,6 @@ function AddWarranty() {
     useEffect(() => {
         axios.get('http://localhost:8000/categories')
             .then(response => {
-                console.log('Categories:', response.data); // Debugging
                 setCategories(response.data);
             })
             .catch(error => {
@@ -70,13 +72,20 @@ function AddWarranty() {
 
         axios.get('http://localhost:8000/products')
             .then(response => {
-                console.log('Products:', response.data); // Debugging
                 setProducts(response.data);
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
             })
             .finally(() => setLoading(false));
+
+        axios.get('http://localhost:8000/tags') // Pobieranie tagów z serwera
+            .then(response => {
+                setTags(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching tags:', error);
+            });
     }, []);
 
     useEffect(() => {
@@ -146,13 +155,41 @@ function AddWarranty() {
         setFormData({ ...formData, receipt: file });
     };
 
+    const handleTagChange = (e) => {
+        const tag = e.target.value;
+        const isChecked = e.target.checked;
+    
+        setSelectedTags(prevTags => {
+            const updatedTags = isChecked
+                ? [...prevTags, tag]
+                : prevTags.filter(t => t !== tag);
+            
+            // Aktualizujemy formData.tags
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                tags: updatedTags
+            }));
+    
+            return updatedTags;
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-
+    
+        // Tworzymy nowy obiekt FormData
         const formDataToSend = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null && value !== '') {
-                formDataToSend.append(key, value);
+                if (key === 'tags') {
+                    // Przekształcamy tablicę tagów na JSON i dodajemy do FormData
+                    formDataToSend.append(key, JSON.stringify(selectedTags));
+                } else if (Array.isArray(value)) {
+                    // W przypadku innych tablic (jeśli są), również przekształcamy je na JSON
+                    formDataToSend.append(key, JSON.stringify(value));
+                } else {
+                    formDataToSend.append(key, value);
+                }
             }
         });
 
@@ -162,7 +199,6 @@ function AddWarranty() {
             }
         })
         .then(response => {
-            console.log('Warranty added successfully:', response.data);
             toast.success('Warranty added successfully', {
                 className: 'react-hot-toast',
               });
@@ -260,6 +296,25 @@ function AddWarranty() {
                     <div className="detail_container">
                         <input type="file" name="receipt" className="detail" onChange={handleFileChange} />
                         <div className="detail_name">Receipt</div>
+                    </div>
+                    <div className="detail_container">
+                        <div id="warranty_form_tags">
+                            {tags.map(tag => (
+                                <React.Fragment key={tag.id}>
+                                    <input
+                                        type="checkbox"
+                                        id={`tag-${tag.id}`}
+                                        value={tag.name}
+                                        checked={selectedTags.includes(tag.name)}
+                                        onChange={handleTagChange}
+                                    />
+                                    <label htmlFor={`tag-${tag.id}`}>
+                                        {tag.name}
+                                    </label>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                        <div className="detail_name">Tags</div>
                     </div>
                     <button type="submit" id="addButton">ADD</button>
                 </div>

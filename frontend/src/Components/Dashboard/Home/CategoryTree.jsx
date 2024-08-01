@@ -88,17 +88,33 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
         setActiveThirdLevelCategoryId(activeThirdLevelCategoryId === categoryId ? null : categoryId);
     };
 
+    // Resetowanie wszystkich kategorii
+    const handleAllClick = () => {
+        setActiveCategoryId(null);
+        setActiveSubCategoryId(null);
+        setActiveThirdLevelCategoryId(null);
+        onSelectCategory(null);
+        onSelectCategoryName("All");
+    };
+
     return (
         <>
             <div className="category-container">
-                <div className="main-categories" 
-                ref={scrollContainerRef}
-                onMouseDown={handleMouseDown}
-                onMouseLeave={handleMouseLeave}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}>
-                    
+                <div className="main-categories"
+                    ref={scrollContainerRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}>
+
                     <ul>
+                        {/* Opcja "All" */}
+                        <li
+                            className={`main-category ${activeCategoryId === null ? 'active' : ''}`}
+                            onClick={handleAllClick}
+                        >
+                            All
+                        </li>
                         {rootCategories.map(category => (
                             <li
                                 key={`main-cat-${category.id}`}
@@ -116,28 +132,27 @@ const CategoryTree = ({ onSelectCategory, onSelectCategoryName }) => {
                             {activeCategoryId === category.id && category.children.map(child => (
                                 <div key={`sub-cat-${child.id}`} className={`sub-category ${activeSubCategoryId === child.id ? 'active' : ''}`}>
                                     <Category category={child} onClick={() => toggleSubCategory(child.id, child.name)} />
-                                    {activeSubCategoryId === child.id}
                                 </div>
                             ))}
                         </div>
                     ))}
                 </div>
                 <div className="third-level-categories">
-                {rootCategories.map(category => (
-                    activeCategoryId === category.id && category.children.map(child => (
-                        activeSubCategoryId === child.id && (
-                            <div key={`third-cat-list-${child.id}`} className={`third-level-category-list show`}>
-                                <ThirdLevelCategory
-                                    key={`third-cat-component-${child.id}`}
-                                    category={child}
-                                    toggleThirdSubCategory={toggleThirdSubCategory}
-                                    activeThirdLevelCategoryId={activeThirdLevelCategoryId}
-                                />
-                            </div>
-                        )
-                    ))
-                ))}
-            </div>
+                    {rootCategories.map(category => (
+                        activeCategoryId === category.id && category.children.map(child => (
+                            activeSubCategoryId === child.id && (
+                                <div key={`third-cat-list-${child.id}`} className={`third-level-category-list show`}>
+                                    <ThirdLevelCategory
+                                        key={`third-cat-component-${child.id}`}
+                                        category={child}
+                                        toggleThirdSubCategory={toggleThirdSubCategory}
+                                        activeThirdLevelCategoryId={activeThirdLevelCategoryId}
+                                    />
+                                </div>
+                            )
+                        ))
+                    ))}
+                </div>
             </div>
         </>
     );

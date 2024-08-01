@@ -22,6 +22,9 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
     return null;
   }
   const warrantyYears = selectedWarranty.warrantyPeriod === 1 ? 'year' : 'years';
+
+  const tags = Array.isArray(selectedWarranty.tags) ? selectedWarranty.tags : [];
+  const tagsString = tags.join(', ');
   
   const toggleReceiptVisibility = () => {
     setIsReceiptVisible(!isReceiptVisible);
@@ -131,7 +134,7 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
                     <div className="detail_name">Warranty Period</div>
                 </div>
                 <div className="detail_container">
-                    <div className="detail" id="detail_tags">{selectedWarranty.tags}</div>
+                    <div className="detail" id="detail_tags">{tagsString}</div>
                     <div className="detail_name">Tags</div>
                 </div>
             </div>

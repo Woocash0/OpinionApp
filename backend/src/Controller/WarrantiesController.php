@@ -7,9 +7,11 @@ use App\Entity\User;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Entity\Warranty;
+use App\Entity\Tag;
 use PhpParser\Node\Expr\New_;
 use App\Form\WarrantyFormType;
 use App\Repository\UserRepository;
+use App\Repository\TagRepository;
 use App\Service\TokenAuthenticator;
 use App\Repository\ProductRepository;
 use App\Repository\WarrantyRepository;
@@ -45,17 +47,19 @@ class WarrantiesController extends AbstractController
     private $warrantyRepository;
     private $productRepository;
     private $userRepository;
+    private $tagRepository;
     private $em;
     private $jwtManager;
     private $tokenStorage;
     private $jwtEncoder;
     private $tokenAuthenticator;
 
-    public function __construct(WarrantyRepository $warrantyRepository, ProductRepository $productRepository, UserRepository $userRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder, TokenAuthenticator $tokenAuthenticator)
+    public function __construct(WarrantyRepository $warrantyRepository, ProductRepository $productRepository, UserRepository $userRepository, TagRepository $tagRepository, EntityManagerInterface $em, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, JWTEncoderInterface $jwtEncoder, TokenAuthenticator $tokenAuthenticator)
     {
         $this->warrantyRepository = $warrantyRepository;
         $this->productRepository = $productRepository;
         $this->userRepository = $userRepository;
+        $this->tagRepository = $tagRepository;
         $this->em = $em;
         $this->jwtManager = $jwtManager;
         $this->tokenStorage = $tokenStorage;
@@ -170,12 +174,14 @@ class WarrantiesController extends AbstractController
 
     */
     #[Route('/add_warranty', name: 'add_warranty', methods: ['POST'])]
-    public function addProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
+    public function addProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator, TagRepository $tagRepository): JsonResponse
     {
            try {
            $user = $this->tokenAuthenticator->authenticateToken($request);
            $data = $request->request->all();
            $file = $request->files->get('receipt');
+
+
 
            if($file){
                $newFileName = uniqid() . '.' . $file->guessExtension();
@@ -232,6 +238,20 @@ class WarrantiesController extends AbstractController
        $warranty->setWarrantyPeriod($data['warranty_period']);
        $warranty->setIdUser($user);
        $warranty->setReceipt($data['receipt']);
+
+       $tagNames = json_decode($data['tags'], true); // Dekoduj JSON na tablicę
+        if (is_array($tagNames)) {
+            foreach ($tagNames as $tagName) {
+                $tag = $this->tagRepository->findOneBy(['name' => $tagName]);
+                if ($tag) {
+                    $warranty->addTag($tag);
+                }
+            }
+        } else {
+            // Obsłuż przypadek, gdy tags nie są poprawnie dekodowane
+            return new Response('Invalid tags format', Response::HTTP_BAD_REQUEST);
+        }
+
        $warranty->setActive(True);
 
        // Validate the Product entity
@@ -432,6 +452,29 @@ class WarrantiesController extends AbstractController
             $warranty->setReceipt($newFileName);
         }
 
+        if(!isset($data['tags'])){
+            $tags = array();
+        }else{
+            $tags = explode(",",$data['tags']);
+            foreach ($tags as $tag) {
+                array_push($tags, $tag);
+            }
+        }
+        error_log("Tags: " . print_r($tags, true));
+
+        if (is_array($tags)) {
+            $warranty->getTags()->clear();
+            foreach ($tags as $tagName) {
+                $tag = $this->tagRepository->findOneBy(['name' => $tagName]);
+                if ($tag) {
+                    $warranty->addTag($tag);
+                }
+            }
+        } else {
+            // Obsłuż przypadek, gdy tags nie są poprawnie dekodowane
+            return new JsonResponse('Invalid tags format', Response::HTTP_BAD_REQUEST);
+        }
+
         $errors = $validator->validate($warranty);
 
         if (count($errors) > 0) {
@@ -488,61 +531,21 @@ class WarrantiesController extends AbstractController
         return new JsonResponse(['message' => 'Warranty deleted successfully'], 200);
     }
 
-    #[Route('/search', methods: ['POST'])]
-    public function search(Request $request): Response
-    {
-        // Logowanie zawartości requestu
-        error_log('Request Content: ' . $request->getContent());
-    
-        $content = json_decode($request->getContent(), true);
-    
-        // Sprawdzenie czy parametr 'search' istnieje
-        if (!isset($content['search'])) {
-            return $this->json(['error' => 'Invalid request'], 400);
-        }
-    
-        $searchString = '%' . strtolower($content['search']) . '%';
-    
-        ini_set('memory_limit', '1024M');
-        // Utworzenie zapytania
-        $query = $this->productRepository->createQueryBuilder('p')
-            ->andWhere('LOWER(p.producer) LIKE :search OR LOWER(p.ProductName) LIKE :search')
-            ->setParameter('search', $searchString)
-            ->getQuery();
+    #[Route('/tags', name: 'tags', methods: ['GET'])]
+    public function getTags(): JsonResponse{
+        $tags = $this->tagRepository->findAll();
+        $data = [];
 
-        $searched = $query->getResult();
-    
-        // Logowanie wyników wyszukiwania
-        error_log('Search Results: ' . print_r($searched, true));
-    
-        // Zwrócenie wyników jako JSON
-        return $this->json($searched);
+        foreach ($tags as $tag) {
+            $data[] = [
+                'id' => $tag->getId(),
+                'name' => $tag->getName(),
+            ];
+        }
+        return new JsonResponse($data);
     }
 
-    /*
-    #[Route('/archive', methods:['GET'], name: 'archive')]
-    public function archive(Security $security): Response
-    {
-        $user = $security->getUser();
 
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $warranties = $this->warrantyRepository->findBy(['idUser' => $user->getId()]);
-
-        $currentDate = new \DateTime();
-        $expiredWarranties = array_filter($warranties, function($warranty) use ($currentDate) {
-            $endDate = clone $warranty->getPurchaseDate();
-            $endDate->modify('+ ' . $warranty->getWarrantyPeriod() . ' years');
-            return $endDate < $currentDate;
-        });
-
-        return $this->render('/views/dashboard/archive.html.twig', [
-           'archives' => $expiredWarranties
-            ]);
-}
-*/
     #[Route('/account', name: 'account')]
     public function showAccount(Request $request): JsonResponse{
             try {

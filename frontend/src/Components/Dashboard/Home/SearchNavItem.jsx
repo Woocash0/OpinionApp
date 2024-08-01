@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faTimes } from '@fortawesome/free-solid-svg-icons';
 import debounce from 'lodash.debounce';
 
-const SearchNavItem = ({ products, onSearchResults, onClearSearch }) => {
+const SearchNavItem = ({ products, onSearchResults, onClearSearch, onShowSearch }) => {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const searchInputRef = useRef(null);
@@ -34,8 +34,11 @@ const SearchNavItem = ({ products, onSearchResults, onClearSearch }) => {
     if (searchVisible) {
       setSearchTerm(''); // Clear search term when closing search
       onClearSearch();  // Clear search results when closing search
+    }else{
+      onShowSearch();
     }
     setSearchVisible(prev => !prev); // Toggle visibility
+    
   };
 
 
