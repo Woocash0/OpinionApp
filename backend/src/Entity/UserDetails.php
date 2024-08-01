@@ -6,7 +6,6 @@ use App\Repository\UserDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 
-#[ApiResource()]
 #[ORM\Entity(repositoryClass: UserDetailsRepository::class)]
 class UserDetails
 {

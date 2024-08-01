@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use ApiPlatform\Core\Annotation\ApiResource;
 
-#[ApiResource]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
@@ -43,10 +41,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'voter', targetEntity: UserOpinionReaction::class, orphanRemoval: true)]
     private Collection $userOpinionReactions;
 
+    #[ORM\OneToMany(mappedBy: 'associatedUser', targetEntity: RefreshToken::class)]
+    private Collection $refreshTokens;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
         $this->userOpinionReactions = new ArrayCollection();
+        $this->refreshTokens = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -185,6 +187,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($userOpinionReaction->getVoter() === $this) {
                 $userOpinionReaction->setVoter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RefreshToken>
+     */
+    public function getRefreshTokens(): Collection
+    {
+        return $this->refreshTokens;
+    }
+
+    public function addRefreshToken(RefreshToken $refreshToken): static
+    {
+        if (!$this->refreshTokens->contains($refreshToken)) {
+            $this->refreshTokens->add($refreshToken);
+            $refreshToken->setAssociatedUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRefreshToken(RefreshToken $refreshToken): static
+    {
+        if ($this->refreshTokens->removeElement($refreshToken)) {
+            // set the owning side to null (unless already changed)
+            if ($refreshToken->getAssociatedUser() === $this) {
+                $refreshToken->setAssociatedUser(null);
             }
         }
 

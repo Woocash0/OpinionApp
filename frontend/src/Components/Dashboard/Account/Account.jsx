@@ -5,6 +5,7 @@ import axios from 'axios';
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import Loading from '../../Loading';
+import useRefreshToken from '../../../hooks/useRefreshToken';
 
 const infoStyle = {
     backgroundColor: 'unset',
@@ -18,6 +19,7 @@ const Account = () => {
    const [userDetails, setUserDetails] = useState(null);
    const [loading, setLoading] = useState(true);
    const navigate = useNavigate();
+   useRefreshToken();
 
   useEffect(() => {
       const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
@@ -41,7 +43,7 @@ const Account = () => {
       .finally(() => {
           setLoading(false);
       });
-  }, [navigate, signOut]);
+  }, []);
 
   const onLogout = (e) => {
       e.preventDefault();

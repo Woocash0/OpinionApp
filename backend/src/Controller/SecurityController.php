@@ -2,23 +2,37 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Ramsey\Uuid\Uuid;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use App\Entity\RefreshToken;
+use App\Repository\RefreshTokenRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SecurityController extends AbstractController
 {
     private UserRepository $userRepository;
     private JWTTokenManagerInterface $jwtManager;
+    private RefreshTokenRepository $refreshTokenRepository;
+    private EntityManagerInterface $em;
 
-    public function __construct(UserRepository $userRepository, JWTTokenManagerInterface $jwtManager)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        JWTTokenManagerInterface $jwtManager,
+        RefreshTokenRepository $refreshTokenRepository,
+        EntityManagerInterface $em
+    ) {
         $this->userRepository = $userRepository;
         $this->jwtManager = $jwtManager;
+        $this->refreshTokenRepository = $refreshTokenRepository;
+        $this->em = $em;
     }
 
     #[Route(path: '/login', name: 'app_login', methods: ['POST'])]
@@ -27,52 +41,98 @@ class SecurityController extends AbstractController
         $requestData = json_decode($request->getContent(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return new JsonResponse(['error' => 'Invalid JSON format'], 400); // 400 Bad Request
+            return new JsonResponse(['error' => 'Invalid JSON format'], 400);
         }
 
         $email = $requestData['email'] ?? null;
         $password = $requestData['password'] ?? null;
 
         if (!$email || !$password) {
-            return new JsonResponse(['error' => 'Missing email or password'], 400); // 400 Bad Request
+            return new JsonResponse(['error' => 'Missing email or password'], 400);
         }
 
-        // Znajdź użytkownika na podstawie adresu e-mail
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
-            return new JsonResponse(['error' => '404 - User not found'], 404); // 404 Not Found
+            return new JsonResponse(['error' => 'User not found'], 404);
         }
 
-        // Sprawdź hasło (używając UserPasswordHasherInterface)
         if (!$passwordHasher->isPasswordValid($user, $password)) {
-            return new JsonResponse(['error' => '401 - Invalid password'], 401);
-    }
+            return new JsonResponse(['error' => 'Invalid password'], 401);
+        }
 
-        // Wygeneruj token JWT
         try {
             $jwtToken = $this->jwtManager->create($user);
+            $expiresAt = new \DateTime('+1 month');
+            $refreshToken = $this->generateRefreshToken();
+
+            $refreshTokenEntity = new RefreshToken();
+            $refreshTokenEntity->setExpiresAt($expiresAt);
+            $refreshTokenEntity->setToken($refreshToken);
+            $refreshTokenEntity->setAssociatedUser($user);
+            $this->em->persist($refreshTokenEntity);
+            $this->em->flush();
+
+            // Send the refresh token in the response body, not in a cookie
+            return new JsonResponse([
+                'message' => 'Login successful',
+                'token' => $jwtToken,
+                'refreshToken' => $refreshToken,
+                'user' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getUserIdentifier(),
+                    'name' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getName() : '',
+                    'surname' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getSurname() : '',
+                ],
+            ], 200);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => '500 - Error generating token'], 500);
+            error_log("Error generating token: " . $e->getMessage());
+            return new JsonResponse(['error' => 'Error generating token'], 500);
+        }
+    }
+
+    #[Route(path: '/refresh', name: 'app_refresh', methods: ['POST'])]
+    public function refresh(Request $request): JsonResponse
+    {
+        $content = $request->getContent();
+        $data = json_decode($content, true);
+        $refreshToken = $data['refreshToken'] ?? null;
+
+        error_log("Error generating token: " . $refreshToken);
+        if (!$refreshToken) {
+            return new JsonResponse(['error' => 'Missing refresh token'], 400);
         }
 
-        $userDetails = $user->getIdUserDetails();
-        $name = $userDetails ? $userDetails->getName() : '';
-        $surname = $userDetails ? $userDetails->getSurname() : '';
+        $refreshTokenEntity = $this->refreshTokenRepository->findOneBy(['token' => $refreshToken]);
 
-        
+        if (!$refreshTokenEntity || $refreshTokenEntity->getExpiresAt() < new \DateTime()) {
+            return new JsonResponse(['error' => 'Invalid or expired refresh token'], 401);
+        }
 
-        return new JsonResponse([
-            'message' => 'Login successful',
-            'token' => $jwtToken,
-           'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getUserIdentifier(),
-                'name' => $name,
-                'surname' => $surname,
-            ],
-        ], 200);
-        
+        $user = $refreshTokenEntity->getAssociatedUser();
+
+        try {
+            $newToken = $this->jwtManager->create($user);
+            $expiresAt = new \DateTime('+1 month');
+
+            $refreshTokenEntity->setExpiresAt($expiresAt);
+            $this->em->persist($refreshTokenEntity);
+            $this->em->flush();
+            $newRefreshToken = $refreshTokenEntity->getToken();
+
+            return new JsonResponse([
+                'token' => $newToken,
+                'newRefreshToken' => $newRefreshToken
+            ], 200);
+        } catch (\Exception $e) {
+            error_log("Error refreshing token: " . $e->getMessage());
+            return new JsonResponse(['error' => 'Error refreshing token'], 500);
+        }
+    }
+
+    private function generateRefreshToken(): string
+    {
+        return Uuid::uuid4()->toString();
     }
 
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]

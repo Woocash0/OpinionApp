@@ -42,10 +42,10 @@ security:
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/warranties, roles: PUBLIC_ACCESS }
+        - { path: ^/warranties, roles: ROLE_USER }
         - { path: ^/categories, roles: PUBLIC_ACCESS }
-        - { path: ^/account, roles: PUBLIC_ACCESS }
-        - { path: ^/add_product, roles: PUBLIC_ACCESS }
+        - { path: ^/account, roles: ROLE_ADMIN }
+        - { path: ^/add_product, roles: ROLE_USER }
         - { path: ^/add_warranty, roles: ROLE_USER }
         - { path: ^/edit_warranty, roles: ROLE_USER }
 

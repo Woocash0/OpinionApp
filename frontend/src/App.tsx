@@ -18,8 +18,8 @@ import "./Components/styles/style.css";
 import "./Components/styles/warranties.css";
 import "./Components/styles/account.css";
 
-
 function App() {
+  
   return (
     <>
     <Routes>

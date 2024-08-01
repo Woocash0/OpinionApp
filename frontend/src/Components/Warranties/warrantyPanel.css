@@ -37,6 +37,12 @@
   opacity: 0.5;
 }
 
+#detail_tags{
+  text-overflow: clip;
+  overflow: auto;
+}
+
+
 @media only screen and (max-device-width: 1555px) {
 
   #elipse .timebox {

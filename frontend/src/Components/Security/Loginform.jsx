@@ -1,10 +1,11 @@
-import React, { useState, useEffect  } from 'react';
-import { Link, useLocation, useNavigate  } from 'react-router-dom';
-import logo from "../images/logo.svg"
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import logo from "../images/logo.svg";
 import queryString from 'query-string';
 import axios from 'axios';
 import { useSignIn } from "react-auth-kit";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
+
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -13,14 +14,10 @@ function LoginForm() {
   const [timer, setTimer] = useState(null);
   const signIn = useSignIn();
 
-
   const [successMessage, setSuccessMessage] = useState('');
   const location = useLocation();
   const { success } = queryString.parse(location.search); // Pobiera parametr 'success'
   const [showSuccess, setShowSuccess] = useState(success === 'true');
-
-  
-
 
   useEffect(() => {
     if (success === 'true') {
@@ -30,7 +27,6 @@ function LoginForm() {
   }, [success, location.pathname]);
 
   const navigate = useNavigate();
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,22 +42,21 @@ function LoginForm() {
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: formData.email, token: response.data.token},
+        authState: { email: formData.email, token: response.data.token, refreshToken: response.data.refreshToken },
       });
 
       if (response.status === 200) {
-        const { token, user } = response.data; // Pobierz dane z odpowiedzi
-        
+        const { token, user } = response.data;
+
         const userData = {
           name: user.name,
           surname: user.surname,
-          email: user.email, // Dane użytkownika do zapisania
-        }; // Upewnij się, że serwer zwraca token
+          email: user.email,
+        };
 
-        
         setShowSuccess(true);
         setSuccessMessage('Login successful!');
-        toast.success(response.data.message, {
+        toast.success('Login successful!', {
           className: 'react-hot-toast',
         });
 
@@ -70,15 +65,15 @@ function LoginForm() {
         }, 1000);  
       }
     } catch (err) {
-        console.error('Login Error:', err);
+      console.error('Login Error:', err);
 
-        if (err.response && err.response.data) {
-          setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
-          toast.error(err.response.data.error, {
-            className: 'react-hot-toast',
-          });
-        }
+      if (err.response && err.response.data) {
+        setError(`Login Error: ${err.response.data.error || 'Unknown Error'}`);
+        toast.error(err.response.data.error || 'Login Error', {
+          className: 'react-hot-toast',
+        });
       }
+    }
   };
 
   const validatePassword = (password) => {
@@ -104,16 +99,14 @@ function LoginForm() {
       clearTimeout(timer);
     }
 
-    // Validate the password
     const isValid = validatePassword(value);
 
-    // Set a new timer to show the error after a delay
     if (!isValid) {
       const newTimer = setTimeout(() => {
         toast.error(error, {
-          className: 'react-hot-toast', // Apply the class for custom styling
+          className: 'react-hot-toast', 
         });
-      }, 1000); // Delay in milliseconds (500ms = 0.5s)
+      }, 1000);
       setTimer(newTimer);
     }
   };
@@ -127,10 +120,11 @@ function LoginForm() {
         <div className="header_login">
           <div>Sign in</div>
           <div className="messages">
-          {showSuccess  && (
-            <div className="success-message">
-              <p>{successMessage}</p>
-            </div>)}
+            {showSuccess && (
+              <div className="success-message">
+                <p>{successMessage}</p>
+              </div>
+            )}
             {error && <div className="alert alert-danger">{error}</div>}
           </div>
         </div>
@@ -157,7 +151,7 @@ function LoginForm() {
           SIGN IN
         </button>
         <Link to="../signinform" className="btn" id="signup">
-            SIGN UP
+          SIGN UP
         </Link>
       </form>
     </div>
@@ -165,4 +159,3 @@ function LoginForm() {
 }
 
 export { LoginForm };
-
