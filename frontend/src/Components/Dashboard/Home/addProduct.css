@@ -16,7 +16,7 @@
     letter-spacing: 0.25em;
     font-family: "Inter";
     border: none;
-    width: 10% !important;
+    width: 10em;
 }
 
 .detail_container textarea{

@@ -2,6 +2,7 @@
 /.vscode
 /.idea
 ###> symfony/framework-bundle ###
+/log.txt
 /.env
 /.env.local
 /.env.local.php

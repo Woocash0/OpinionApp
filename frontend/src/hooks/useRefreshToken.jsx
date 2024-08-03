@@ -1,5 +1,6 @@
 import { useSignIn, useSignOut, useAuthUser } from 'react-auth-kit';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const useRefreshToken = () => {
   const signIn = useSignIn();
@@ -25,6 +26,9 @@ const useRefreshToken = () => {
             expiresIn: 3600,
             tokenType: 'Bearer',
             authState: { token, refreshToken: newRefreshToken },
+          });
+          toast.success("Session successfully restored", {
+            className: 'react-hot-toast',
           });
           return token;
         } else {

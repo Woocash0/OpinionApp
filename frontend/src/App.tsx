@@ -18,9 +18,7 @@ import "./Components/styles/style.css";
 import "./Components/styles/warranties.css";
 import "./Components/styles/account.css";
 
-
 function App() {
-  
   return (
     <>
     <Routes>
@@ -30,13 +28,10 @@ function App() {
       <Route path="/add_warranty" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><AddWarranty /></LayoutWithNavbar></RequireAuth>} />
       <Route path="/edit_warranty/:warrantyId" element={<RequireAuth loginPath="/loginform"><LayoutWithNavbar><EditWarranty /></LayoutWithNavbar></RequireAuth>} />
       
-
       <Route path="/*" element={<LayoutWithNavbar><Home /></LayoutWithNavbar>} />
 
-    {/* Trasy używające LayoutWithoutNavbar */}
       <Route path="/loginform" element={<LayoutWithoutNavbar><LoginForm /></LayoutWithoutNavbar>} />
       <Route path="/signinform" element={<LayoutWithoutNavbar><RegistrationForm /></LayoutWithoutNavbar>} />
-      
     </Routes>
     </>
   )

@@ -9,7 +9,6 @@ use App\Entity\Category;
 use App\Entity\Warranty;
 use App\Entity\Tag;
 use PhpParser\Node\Expr\New_;
-use App\Form\WarrantyFormType;
 use App\Repository\UserRepository;
 use App\Repository\TagRepository;
 use App\Service\TokenAuthenticator;
@@ -17,7 +16,6 @@ use App\Repository\ProductRepository;
 use App\Repository\WarrantyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -399,10 +397,7 @@ class WarrantiesController extends AbstractController
     {
         // Odczytanie danych z request
         $data = $request->request->all();
-        error_log("Parsed Data: " . print_r($data, true));
-
         $receipt = $request->files->get('receipt');
-        error_log("Receipt: " . print_r($receipt, true));
         $user = $this->tokenAuthenticator->authenticateToken($request);
         if (!$user) {
             return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
@@ -460,8 +455,6 @@ class WarrantiesController extends AbstractController
                 array_push($tags, $tag);
             }
         }
-        error_log("Tags: " . print_r($tags, true));
-
         if (is_array($tags)) {
             $warranty->getTags()->clear();
             foreach ($tags as $tagName) {
@@ -544,30 +537,4 @@ class WarrantiesController extends AbstractController
         }
         return new JsonResponse($data);
     }
-
-
-    #[Route('/account', name: 'account')]
-    public function showAccount(Request $request): JsonResponse{
-            try {
-                // Wywołaj metodę authenticateToken z klasy TokenAuthenticator
-                $user = $this->tokenAuthenticator->authenticateToken($request);
-                $userDetails = $user->getIdUserDetails();
-        
-                // Jeśli użytkownik został pomyślnie uwierzytelniony, możesz kontynuować przetwarzanie
-                return new JsonResponse([
-                    'message' => "success", 
-                    'user' => [
-                        'id' => $user->getId(),
-                        'email' => $user->getEmail(),
-                        'name' => $userDetails->getName(),
-                        'surname' => $userDetails->getSurname(),
-                    ],
-                ]);
-            } catch (BadCredentialsException $e) {
-                return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
-            } catch (AccessDeniedException $e) {
-                return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
-            }
-    }
-
 }
