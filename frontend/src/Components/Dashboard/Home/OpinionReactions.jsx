@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-hot-toast";
 
 
-const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => {
+const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown, userReacted }) => {
   const [thumbsUp, setThumbsUp] = useState(initialThumbsUp);
   const [thumbsDown, setThumbsDown] = useState(initialThumbsDown);
   const [userReaction, setUserReaction] = useState(null); // 'up' or 'down'
@@ -88,10 +88,10 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown }) => 
   return (
     <div className='opinion-reactions'>
       <div id="thumbsUp" onClick={handleThumbsUp} style={{ cursor: loading || userReaction ? 'not-allowed' : 'pointer' }}>
-        <FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{ color: "#ffffff" }} /> {thumbsUp}
+        <FontAwesomeIcon icon={faThumbsUp} className='opinion-icon' size='lg' style={{ color: userReacted === 'up' ? '#076478' : '#ffffff' }} /> {thumbsUp}
       </div>
       <div id="thumbsDown" onClick={handleThumbsDown} style={{ cursor: loading || userReaction ? 'not-allowed' : 'pointer' }}>
-        <FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{ color: "#ffffff" }} /> {thumbsDown}
+        <FontAwesomeIcon icon={faThumbsDown} className='opinion-icon' size='lg' style={{ color: userReacted=== 'down' ? '#076478' : '#ffffff' }} /> {thumbsDown}
       </div>
     </div>
   );

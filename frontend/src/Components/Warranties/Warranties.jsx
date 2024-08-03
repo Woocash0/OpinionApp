@@ -7,54 +7,103 @@ import { useSignOut } from 'react-auth-kit';
 import { toast } from 'react-hot-toast';
 import Loading from '../Loading';
 import { motion } from "framer-motion";
+import useRefreshToken from '../../hooks/useRefreshToken';
 
 const Warranties = ({ onSelectWarranty }) => {
     const [warranties, setWarranties] = useState([]);
     const [loading, setLoading] = useState(true); // Dodaj stan do śledzenia ładowania
     const signOut = useSignOut();
     const navigate = useNavigate();
+    const refreshToken = useRefreshToken(); 
     const currentDate = new Date();
 
     useEffect(() => {
-        const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-        const authToken = cookies.find(cookie => cookie[0] === '_auth');
+        const fetchWarranties = async () => {
+          setLoading(true);
+          const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+          const authToken = cookies.find(cookie => cookie[0] === '_auth');
     
-        setLoading(true);
-    
-        axios.get('http://localhost:8000/account', {
-            headers: {
-                'Authorization': `Bearer ${authToken[1]}`
-            }
-        })
-        .then(response => {
-            const userEmail = response.data.user.email;
-            axios.get('http://localhost:8000/warranties', {
-                params: {
-                    owner: userEmail
-                }
-            })
-            .then(response => {
-                setWarranties(Array.isArray(response.data.warranties) ? response.data.warranties : []);
-            })
-            .catch(error => {
-                toast.error("Error getting warranties", error.response.data.message, {
-                    className: 'react-hot-toast',
-                  });
-                setWarranties([]);
-            })
-            .finally(() => {
-                setLoading(false);
+          if (!authToken) {
+            console.error('No auth token found');
+            navigate('/loginform');
+            toast.error('Authentication token missing. Please log in again.', {
+              className: 'react-hot-toast',
             });
+            setLoading(false);
+            return;
+          }
     
-        })
-        .catch(error => {
-            toast.error("Authorization Error", error.response.data.message, {
+          try {
+            const response = await axios.get('http://localhost:8000/account', {
+              headers: {
+                'Authorization': `Bearer ${authToken[1]}`
+              }
+            });
+            const userEmail = response.data.user.email;
+            
+            try {
+              const warrantiesResponse = await axios.get('http://localhost:8000/warranties', {
+                params: {
+                  owner: userEmail
+                }
+              });
+              setWarranties(Array.isArray(warrantiesResponse.data.warranties) ? warrantiesResponse.data.warranties : []);
+            } catch (warrantiesError) {
+              toast.error("Error getting warranties", warrantiesError.response?.data?.message || 'An error occurred', {
                 className: 'react-hot-toast',
               });
-            signOut();
-            navigate('/loginform');
-        });
-    }, []);
+              setWarranties([]);
+            }
+    
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              console.log("Token expired or invalid. Attempting to refresh.");
+              try {
+                const newAuthToken = await refreshToken();
+                if (newAuthToken) {
+                  // Ponów żądanie po odświeżeniu tokena
+                  const retryResponse = await axios.get('http://localhost:8000/account', {
+                    headers: {
+                      'Authorization': `Bearer ${newAuthToken}`
+                    }
+                  });
+                  const userEmail = retryResponse.data.user.email;
+                  
+                  try {
+                    const warrantiesResponse = await axios.get('http://localhost:8000/warranties', {
+                      params: {
+                        owner: userEmail
+                      }
+                    });
+                    setWarranties(Array.isArray(warrantiesResponse.data.warranties) ? warrantiesResponse.data.warranties : []);
+                  } catch (warrantiesError) {
+                    toast.error("Error getting warranties", warrantiesError.response?.data?.message || 'An error occurred', {
+                      className: 'react-hot-toast',
+                    });
+                    setWarranties([]);
+                  }
+                }
+              } catch (refreshError) {
+                toast.error("Session expired. Please log in again.", {
+                  className: 'react-hot-toast',
+                });
+                signOut();
+                navigate('/loginform');
+              }
+            } else {
+              toast.error("Authorization Error", error.response?.data?.message || 'An error occurred', {
+                className: 'react-hot-toast',
+              });
+              signOut();
+              navigate('/loginform');
+            }
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchWarranties();
+      }, []);
 
     const calculateExpirationDate = (purchaseDate, warrantyPeriod) => {
         const purchase = new Date(purchaseDate);

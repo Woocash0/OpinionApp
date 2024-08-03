@@ -45,4 +45,19 @@ class UserOpinionReactionRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    /**
+     * @return UserOpinionReaction[] Returns an array of UserOpinionReaction objects
+     */
+    public function findReactionsByProductIdAndUser($productId, $userId): array
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.opinion', 'o')
+            ->innerJoin('o.product', 'p')
+            ->andWhere('p.id = :productId')
+            ->andWhere('u.voter = :userId')
+            ->setParameter('productId', $productId)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
 }

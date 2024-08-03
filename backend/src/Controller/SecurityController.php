@@ -8,13 +8,17 @@ use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use App\Entity\RefreshToken;
 use App\Repository\RefreshTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\TokenAuthenticator;
 
 class SecurityController extends AbstractController
 {
@@ -22,17 +26,20 @@ class SecurityController extends AbstractController
     private JWTTokenManagerInterface $jwtManager;
     private RefreshTokenRepository $refreshTokenRepository;
     private EntityManagerInterface $em;
+    private $tokenAuthenticator;
 
     public function __construct(
         UserRepository $userRepository,
         JWTTokenManagerInterface $jwtManager,
         RefreshTokenRepository $refreshTokenRepository,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        TokenAuthenticator $tokenAuthenticator
     ) {
         $this->userRepository = $userRepository;
         $this->jwtManager = $jwtManager;
         $this->refreshTokenRepository = $refreshTokenRepository;
         $this->em = $em;
+        $this->tokenAuthenticator = $tokenAuthenticator;
     }
 
     #[Route(path: '/login', name: 'app_login', methods: ['POST'])]
@@ -98,7 +105,6 @@ class SecurityController extends AbstractController
         $data = json_decode($content, true);
         $refreshToken = $data['refreshToken'] ?? null;
 
-        error_log("Error generating token: " . $refreshToken);
         if (!$refreshToken) {
             return new JsonResponse(['error' => 'Missing refresh token'], 400);
         }
@@ -122,7 +128,8 @@ class SecurityController extends AbstractController
 
             return new JsonResponse([
                 'token' => $newToken,
-                'newRefreshToken' => $newRefreshToken
+                'newRefreshToken' => $newRefreshToken,
+                'user' => $user
             ], 200);
         } catch (\Exception $e) {
             error_log("Error refreshing token: " . $e->getMessage());
@@ -133,6 +140,28 @@ class SecurityController extends AbstractController
     private function generateRefreshToken(): string
     {
         return Uuid::uuid4()->toString();
+    }
+
+    #[Route('/account', name: 'account')]
+    public function showAccount(Request $request): JsonResponse{
+            try {
+                $user = $this->tokenAuthenticator->authenticateToken($request);
+                $userDetails = $user->getIdUserDetails();
+        
+                return new JsonResponse([
+                    'message' => "success", 
+                    'user' => [
+                        'id' => $user->getId(),
+                        'email' => $user->getEmail(),
+                        'name' => $userDetails->getName(),
+                        'surname' => $userDetails->getSurname(),
+                    ],
+                ]);
+            } catch (BadCredentialsException $e) {
+                return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
+            } catch (AccessDeniedException $e) {
+                return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
+            }
     }
 
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]

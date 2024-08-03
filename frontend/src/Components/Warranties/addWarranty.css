@@ -62,12 +62,12 @@
 }
 
 .warranty_add_form #warranty_form_tags{
+    width: 80%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around !important;
     border: none;
     margin: auto;
-    max-width: 32em;
 }
 
 #warranty_form_tags label{
@@ -84,6 +84,10 @@
 #warranty_form_tags input[type="checkbox"]:checked + label {
     color: white;
     border-color: white;
+}
+
+.warranty_add_form #addButton{
+    width: 10em;
 }
 
 /* Stylowanie kontenera sugestii */
@@ -141,6 +145,14 @@
     .react-autosuggest__suggestions-container {
         width: 60% ;
         margin: auto;
+    }
+    .warranty_add_form #warranty_form_tags{
+
+        width: 80%;
+    }
+
+    #warranty_form_tags label{
+        font-size: 0.4em;
     }
 }
 

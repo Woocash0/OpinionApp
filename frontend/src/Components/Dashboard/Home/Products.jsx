@@ -3,11 +3,27 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import AddButton from '../../images/add_button.svg';
 import SearchNavItem from './SearchNavItem';
+import { useNavigate } from 'react-router-dom';
+import { useAuthUser } from 'react-auth-kit';
+import { toast } from 'react-hot-toast';
 
 const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) => {
     const [products, setProducts] = useState([]);
     const [searchedProducts, setSearchedProducts] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+    const auth = useAuthUser();
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        const user = auth();
+        if (user) {
+          navigate('/add_product');
+        } else {
+          toast.error('Login to add products', {
+            className: 'react-hot-toast',
+          });
+        }
+      };
 
     useEffect(() => {
         axios.get('http://localhost:8000/products')
@@ -50,9 +66,13 @@ const Products = ({ selectedCategory, selectedCategoryName, onSelectProduct }) =
                         onClearSearch={handleClearSearch}
                         onShowSearch={handleShowSearch}
                     />
-                    <Link to="/add_product" className="add_product_button">
-                        <img src={AddButton} alt="Add Product" />
-                    </Link>
+                    <img
+      src={AddButton}
+      alt="Add Product"
+      onClick={handleClick}
+      className="add_product_button"
+      style={{ cursor: 'pointer' }} // Dodaje wskazanie kursora do kliknięcia
+    />
                 </span>
             </div>
             
