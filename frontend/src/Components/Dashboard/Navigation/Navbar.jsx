@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faBoxArchive, faUser, faTags, faSquarePlus, faRankingStar } from '@fortawesome/free-solid-svg-icons';
+import { faBoxArchive, faUser, faTags, faRankingStar } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../images/logo_color.svg';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,13 +13,6 @@ const Navbar = () => {
         <NavItem icon={faRankingStar} link="/ranking" text="Ranking" />
         <NavItem icon={faBoxArchive} link="/warranties" text="My warranties" />
         <NavItem icon={faUser} link="/account" text="My account" />
-        
-        {/*
-        <SearchNavItem />
-        <NavItem icon={faHouse} link="warranties" text="Warranties" />
-        <NavItem icon={faTags} link="products" text="Products" />
-        
-        */}
       </ul>
     </nav>
   );

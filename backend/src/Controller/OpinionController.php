@@ -7,6 +7,7 @@ use App\Entity\Opinion;
 use App\Entity\UserOpinionReaction;
 use App\Entity\Product;
 use Sentiment\Analyzer;
+use App\Repository\OpinionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,14 +24,19 @@ use DateTime;
 class OpinionController extends AbstractController
 {
     private $tokenAuthenticator;
+    private $opinionRepository;
+    private $em;
 
-    public function __construct(TokenAuthenticator $tokenAuthenticator)
+    public function __construct(TokenAuthenticator $tokenAuthenticator, OpinionRepository $opinionRepository, EntityManagerInterface $em)
     {
         $this->tokenAuthenticator = $tokenAuthenticator;
+        $this->opinionRepository = $opinionRepository;
+        $this->em = $em;
+        
     }
 
     #[Route('/add_opinion', name: 'add_opinion', methods: ['POST'])]
-    public function addOpinion(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
+    public function addOpinion(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         
         function sentimentAnalysisScore($comment, $lexiconName) {
@@ -97,7 +103,7 @@ class OpinionController extends AbstractController
             return new JsonResponse(['error' => 'Product ID is required'], Response::HTTP_BAD_REQUEST);
         }
 
-        $product = $em->getRepository(Product::class)->find($productId);
+        $product = $this->em->getRepository(Product::class)->find($productId);
         if (!$product) {
             return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
@@ -107,7 +113,7 @@ class OpinionController extends AbstractController
              return new JsonResponse(['error' => 'User Email is required'], Response::HTTP_BAD_REQUEST);
          }
  
-         $user = $em->getRepository(User::class)->find($userEmail);
+         $user = $this->em->getRepository(User::class)->find($userEmail);
 
          if (!$user) {
              return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
@@ -133,22 +139,22 @@ class OpinionController extends AbstractController
 
         $product->addOpinion($opinion);
  
-         $em->persist($opinion);
-         $em->flush();
+        $this->em->persist($opinion);
+        $this->em>flush();
  
          return new JsonResponse(['status' => 'Opinion added'], Response::HTTP_CREATED);
     }
     
 
     #[Route('/thumbs-up', name: 'opinion_thumbs_up', methods: ['POST'])]
-    public function thumbsUp(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function thumbsUp(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $opinionId = $data['opinionId'];
         $user = $this->tokenAuthenticator->authenticateToken($request);
 
-        $opinion = $entityManager->getRepository(Opinion::class)->find($opinionId);
-        $reaction = $entityManager->getRepository(UserOpinionReaction::class)->findOneBy(['voter' => $user, 'opinion' => $opinion]);
+        $opinion = $this->em->getRepository(Opinion::class)->find($opinionId);
+        $reaction = $this->em->getRepository(UserOpinionReaction::class)->findOneBy(['voter' => $user, 'opinion' => $opinion]);
 
         if (!$opinion) {
             return new JsonResponse(['success' => false, 'message' => 'Opinion not found'], 404);
@@ -162,10 +168,10 @@ class OpinionController extends AbstractController
         $userReaction->setVoter($user);
         $userReaction->setOpinion($opinion);
         $userReaction->setReaction('up');
-        $entityManager->persist($userReaction);
+        $this->em->persist($userReaction);
 
         $opinion->setThumbsUp($opinion->getThumbsUp() + 1);
-        $entityManager->flush();
+        $this->em->flush();
 
         return new JsonResponse(['success' => true]);
     }
@@ -199,4 +205,55 @@ class OpinionController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+
+    #[Route('/uninspected', name: 'uninspected_opinions', methods: ['GET'])]
+    public function getUninspectedOpinions()
+    {
+        $opinions = $this->opinionRepository->findUninspectedOpinions();
+        $data = [];
+
+        foreach ($opinions as $opinion) {
+            $data[] = [
+                'id' => $opinion->getId(),
+                'opinionText' => $opinion->getOpinionText(),
+                'rating' => $opinion->getRating(),
+                'createdAt' => $opinion->getCreatedAt()->format('Y-m-d H:i:s'),
+                'productName' => $opinion->getProduct()->getProductName(),
+                'productCategory' => $opinion->getProduct()->getCategory()->getCategoryName(),
+            ];
+        }
+
+        return new JsonResponse($data);
+    }
+
+
+    #[Route('/inspect/accept/{id}', name: 'accept_opinion', methods: ['POST'])]
+    public function acceptOpinion(Request $request, int $id): Response
+    {
+        $opinion = $this->em->getRepository(Opinion::class)->find($id);
+        if (!$opinion) {
+            return new JsonResponse(['message' => 'Opinion not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $opinion->setInspected(true);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Opinion accepted']);
+    }
+
+    #[Route('/inspect/delete/{id}', name: 'delete_opinion', methods: ['DELETE'])]
+    public function deleteOpinion(Request $request, int $id): Response
+    {
+        $opinion = $this->em->getRepository(Opinion::class)->find($id);
+        if (!$opinion) {
+            return new JsonResponse(['message' => 'Opinion not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->em->remove($opinion);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Opinion deleted']);
+    }
+
+    
 }

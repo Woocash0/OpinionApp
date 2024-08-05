@@ -48,7 +48,7 @@ class WarrantyNotificationService
             $email = (new Email())
             ->from($this->fromEmail)
             ->to($user->getEmail())
-            ->subject('Twoja gwarancja na produkt wkrótce wygasa')
+            ->subject('Your product warranty is about to expire')
             ->html(sprintf(
                 '<p>Hello %s,</p><p>Your Warranty for the product <b>%s</b> in the category <b>%s</b> ends <b>%s</b>.</p><p>Sent automatically from OpinionApp</p>',
                 $user->getIdUserDetails()->getName(),

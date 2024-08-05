@@ -6,6 +6,7 @@ use App\Service\WarrantyNotificationService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TestSendWarrantyNotificationsCommand extends Command
 {
@@ -27,18 +28,29 @@ class TestSendWarrantyNotificationsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->warrantyNotificationService->sendWarrantyExpiringNotifications();
-        
+        $io = new SymfonyStyle($input, $output);
+
         $now = new \DateTime();
         $currentDateTime = $now->format('Y-m-d H:i:s');
-        $content = sprintf(
-            '[%s] - All emails successfully sent.',
-            $currentDateTime
-        );
 
+        try {
+            $this->warrantyNotificationService->sendWarrantyExpiringNotifications();            
+            $content = sprintf(
+                '[%s] - All emails successfully sent.',
+                $currentDateTime
+            );
+            $io->success($content);
 
-        $output->writeln($content);
+            return Command::SUCCESS;
+        } catch (\Exception $e) {
+            $errorMessage = sprintf(
+                '[%s] - Error occurred: %s',
+                $currentDateTime,
+                $e->getMessage()
+            );
+            $io->error($errorMessage);
 
-        return Command::SUCCESS;
+            return Command::FAILURE;
+        }
     }
 }

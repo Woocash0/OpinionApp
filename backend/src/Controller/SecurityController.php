@@ -88,6 +88,7 @@ class SecurityController extends AbstractController
                 'user' => [
                     'id' => $user->getId(),
                     'email' => $user->getUserIdentifier(),
+                    'role' => $user->getRoles(),
                     'name' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getName() : '',
                     'surname' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getSurname() : '',
                 ],
@@ -144,24 +145,25 @@ class SecurityController extends AbstractController
 
     #[Route('/account', name: 'account')]
     public function showAccount(Request $request): JsonResponse{
-            try {
-                $user = $this->tokenAuthenticator->authenticateToken($request);
-                $userDetails = $user->getIdUserDetails();
-        
-                return new JsonResponse([
-                    'message' => "success", 
-                    'user' => [
-                        'id' => $user->getId(),
-                        'email' => $user->getEmail(),
-                        'name' => $userDetails->getName(),
-                        'surname' => $userDetails->getSurname(),
-                    ],
-                ]);
-            } catch (BadCredentialsException $e) {
-                return new JsonResponse(['message' => 'Nieprawidłowy token JWT.'], Response::HTTP_UNAUTHORIZED);
-            } catch (AccessDeniedException $e) {
-                return new JsonResponse(['message' => 'Sesja wygasła lub użytkownik nie istnieje. Zaloguj się ponownie.'], Response::HTTP_UNAUTHORIZED);
-            }
+        try {
+            $user = $this->tokenAuthenticator->authenticateToken($request);
+            $userDetails = $user->getIdUserDetails();
+    
+            return new JsonResponse([
+                'message' => "success", 
+                'user' => [
+                    'id' => $user->getId(),
+                    'roles' => $user->getRoles(),
+                    'email' => $user->getEmail(),
+                    'name' => $userDetails->getName(),
+                    'surname' => $userDetails->getSurname(),
+                ],
+            ]);
+        } catch (BadCredentialsException $e) {
+            return new JsonResponse(['message' => 'Inwalid JWT Token.'], Response::HTTP_UNAUTHORIZED);
+        } catch (AccessDeniedException $e) {
+            return new JsonResponse(['message' => 'Session expired or user doesnt exist. Log in again.'], Response::HTTP_UNAUTHORIZED);
+        }
     }
 
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]

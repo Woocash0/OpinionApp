@@ -17,6 +17,7 @@ const infoStyle = {
 const Account = () => {
   const signOut = useSignOut();
   const [userDetails, setUserDetails] = useState(null);
+  const [roles, setRoles] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const refreshToken = useRefreshToken(); // Hook do odświeżania tokenu
@@ -43,6 +44,7 @@ const Account = () => {
       })
       .then(response => {
         setUserDetails(response.data.user);
+        setRoles(response.data.user.roles);
         setLoading(false);
       })
       .catch(error => {
@@ -61,6 +63,7 @@ const Account = () => {
             })
             .then(response => {
               setUserDetails(response.data.user);
+              setRoles(response.data.user.roles);
               setLoading(false);
             })
             .catch(refreshError => {
@@ -97,6 +100,12 @@ const Account = () => {
     });
   };
 
+    const extractRole = (roles) => {
+      const match = roles.match(/(?<=_).+/);
+      const extractedRole =  match ? match[0] : '';
+      return extractedRole.charAt(0).toUpperCase() + extractedRole.slice(1).toLowerCase();
+    };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -112,6 +121,12 @@ const Account = () => {
           ) : (
             userDetails && (
               <>
+                <div className="detail_container">
+                  <div className="detail">{roles.map((role, index) => (
+                      <span key={index}>{extractRole(role)}</span>
+                  ))}</div>
+                  <div className="detail_name">Role</div>
+                </div>
                 <div className="detail_container">
                   <div className="detail">{userDetails.name}</div>
                   <div className="detail_name">Name</div>

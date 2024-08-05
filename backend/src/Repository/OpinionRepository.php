@@ -20,6 +20,14 @@ class OpinionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Opinion::class);
     }
+    
+    public function findUninspectedOpinions()
+    {
+        return $this->createQueryBuilder('o')
+            ->where('o.inspected = false')
+            ->getQuery()
+            ->getResult();
+    }
 
 //    /**
 //     * @return Opinion[] Returns an array of Opinion objects

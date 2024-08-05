@@ -54,6 +54,9 @@ class Opinion
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\Column]
+    private ?bool $inspected = null;
+
     public function __construct()
     {
         $this->userOpinionReactions = new ArrayCollection();
@@ -222,6 +225,19 @@ class Opinion
     public function setCreatedAt(?\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function isInspected(): ?bool
+    {
+        return $this->inspected;
+
+    }
+
+    public function setInspected(bool $inspected): static
+    {
+        $this->inspected = $inspected;
 
         return $this;
     }
