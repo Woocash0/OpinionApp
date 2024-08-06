@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\WarrantyNotificationService;
 
 
 use App\Service\TokenAuthenticator;
@@ -26,13 +27,14 @@ class OpinionController extends AbstractController
     private $tokenAuthenticator;
     private $opinionRepository;
     private $em;
+    private $warrantyNotificationService;
 
-    public function __construct(TokenAuthenticator $tokenAuthenticator, OpinionRepository $opinionRepository, EntityManagerInterface $em)
+    public function __construct(TokenAuthenticator $tokenAuthenticator, OpinionRepository $opinionRepository, EntityManagerInterface $em, WarrantyNotificationService $warrantyNotificationService)
     {
         $this->tokenAuthenticator = $tokenAuthenticator;
         $this->opinionRepository = $opinionRepository;
         $this->em = $em;
-        
+        $this->warrantyNotificationService = $warrantyNotificationService;
     }
 
     #[Route('/add_opinion', name: 'add_opinion', methods: ['POST'])]
@@ -153,6 +155,10 @@ class OpinionController extends AbstractController
         $opinionId = $data['opinionId'];
         $user = $this->tokenAuthenticator->authenticateToken($request);
 
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+
         $opinion = $this->em->getRepository(Opinion::class)->find($opinionId);
         $reaction = $this->em->getRepository(UserOpinionReaction::class)->findOneBy(['voter' => $user, 'opinion' => $opinion]);
 
@@ -183,6 +189,10 @@ class OpinionController extends AbstractController
         $opinionId = $data['opinionId'];
         $user = $this->tokenAuthenticator->authenticateToken($request);
 
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+
         $opinion = $entityManager->getRepository(Opinion::class)->find($opinionId);
         $reaction = $entityManager->getRepository(UserOpinionReaction::class)->findOneBy(['voter' => $user, 'opinion' => $opinion]);
 
@@ -207,8 +217,16 @@ class OpinionController extends AbstractController
     }
 
     #[Route('/uninspected', name: 'uninspected_opinions', methods: ['GET'])]
-    public function getUninspectedOpinions()
+    public function getUninspectedOpinions(Request $request)
     {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
         $opinions = $this->opinionRepository->findUninspectedOpinions();
         $data = [];
 
@@ -217,6 +235,9 @@ class OpinionController extends AbstractController
                 'id' => $opinion->getId(),
                 'opinionText' => $opinion->getOpinionText(),
                 'rating' => $opinion->getRating(),
+                'createdBy' => $opinion->getCreatedBy()->getUserIdentifier(),
+                'thumbsDown' => $opinion->getThumbsDown(),
+                'thumbsUp' => $opinion->getThumbsUp(),
                 'createdAt' => $opinion->getCreatedAt()->format('Y-m-d H:i:s'),
                 'productName' => $opinion->getProduct()->getProductName(),
                 'productCategory' => $opinion->getProduct()->getCategory()->getCategoryName(),
@@ -230,6 +251,14 @@ class OpinionController extends AbstractController
     #[Route('/inspect/accept/{id}', name: 'accept_opinion', methods: ['POST'])]
     public function acceptOpinion(Request $request, int $id): Response
     {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
         $opinion = $this->em->getRepository(Opinion::class)->find($id);
         if (!$opinion) {
             return new JsonResponse(['message' => 'Opinion not found'], Response::HTTP_NOT_FOUND);
@@ -244,10 +273,20 @@ class OpinionController extends AbstractController
     #[Route('/inspect/delete/{id}', name: 'delete_opinion', methods: ['DELETE'])]
     public function deleteOpinion(Request $request, int $id): Response
     {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+        
         $opinion = $this->em->getRepository(Opinion::class)->find($id);
         if (!$opinion) {
             return new JsonResponse(['message' => 'Opinion not found'], Response::HTTP_NOT_FOUND);
         }
+        $owner = $opinion->getCreatedBy();
+        $this->warrantyNotificationService->sendEmailAboutOpinionDelete($owner, $opinion);
 
         $this->em->remove($opinion);
         $this->em->flush();

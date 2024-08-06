@@ -42,7 +42,7 @@ function LoginForm() {
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: formData.email, token: response.data.token, refreshToken: response.data.refreshToken },
+        authState: { email: response.data.user.email, token: response.data.token, refreshToken: response.data.refreshToken, roles:response.data.user.roles },
       });
 
       if (response.status === 200) {
@@ -111,10 +111,14 @@ function LoginForm() {
     }
   };
 
+  const handleLogoClick = () => {
+    navigate('/', { replace: true });
+  }
+
   return (
     <div className="container">
       <div className="logo">
-        <img src={logo} alt="Logo" />
+        <img src={logo} alt="Logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }} />
       </div>
       <form onSubmit={handleSubmit} className="login">
         <div className="header_login">

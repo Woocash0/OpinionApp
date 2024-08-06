@@ -5,6 +5,7 @@ import { RequireAuth } from "react-auth-kit";
 
 
 import { LoginForm } from "./Components/Security/Loginform";
+import  Unauthorized  from "./Components/Security/Unauthorized";
 import  RegistrationForm  from "./Components/Registration/Registrationform";
 import  Home  from "./Components/Dashboard/Home/Home";
 import  Account  from "./Components/Dashboard/Account/Account";
@@ -17,6 +18,8 @@ import "./App.css";
 import "./Components/styles/style.css";
 import "./Components/styles/warranties.css";
 import "./Components/styles/account.css";
+import RoleProtectedRoute from './RoleProtectedRoute';
+import ModeratorPanel from './Components/Moderator/ModeratorPanel';
 
 function App() {
   return (
@@ -32,6 +35,12 @@ function App() {
 
       <Route path="/loginform" element={<LayoutWithoutNavbar><LoginForm /></LayoutWithoutNavbar>} />
       <Route path="/signinform" element={<LayoutWithoutNavbar><RegistrationForm /></LayoutWithoutNavbar>} />
+
+      <Route element={<RoleProtectedRoute roles={['ROLE_MODERATOR']} />}>
+        <Route path="/moderator_panel" element={<LayoutWithNavbar><ModeratorPanel /></LayoutWithNavbar>} />
+      </Route>
+
+      <Route path="/unauthorized" element={<LayoutWithNavbar><Unauthorized /></LayoutWithNavbar>} />
     </Routes>
     </>
   )

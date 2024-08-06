@@ -1,0 +1,166 @@
+.decision_container{
+    width: 100%;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.buttons_container_1{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.quantity_check{
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 1em;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 25px;
+    width: 4em;
+    letter-spacing: 3px;
+    text-align: center;
+}
+
+.buttons_container_2{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+
+}
+/*
+.checked_opinion{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: white;  
+}
+*/
+
+.checked_opinion{
+    min-width: 25em;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+    color:#261132;
+  }
+  
+  .opinion_info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  
+  .opinion_info div {
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);  
+  }
+
+  .opinion_details{
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  .reactions{
+    display: flex;
+    gap: 10px;
+  }
+  
+  .opinion-text {
+    padding: 20px;
+    background-color: #e9ecef;
+    border-left: 5px solid #261132;
+    border-radius: 5px;
+    font-size: 1.2em;
+  }
+  
+  .opinion-text p {
+    margin: 10px 0 0 0;
+    line-height: 1.5;
+  }
+
+
+.mod_button{
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    padding: 1em;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 25px;
+    width: 8em;
+    letter-spacing: 3px;
+    cursor: pointer;
+}
+
+.mod_button:hover{
+    color: #261132;
+    border: 2px solid white;
+    background-color: white;
+    font-weight: bolder;
+    box-shadow: 0px 10px 30px #26113280;  
+}
+
+#accept_button:hover{
+    box-shadow: 0px 10px 30px rgba(0, 255, 0, 0.5); 
+}
+
+#delete_button:hover{
+    box-shadow: 0px 10px 30px rgba(255, 0, 0, 0.5); 
+}
+
+
+@media only screen and (max-device-width: 992px) {
+    .mod_button{
+        padding: 0.6em;
+        border-radius: 25px;
+        width: 7em;
+        height: 3em;
+    }
+
+    .quantity_check{
+        padding: 0.8em;
+        width: 4em;
+    }
+    .buttons_container_1{
+        margin-top: 1em;
+    }
+
+    .decision_container{
+        height: 80vh;
+        font-size: 0.3em;
+        justify-content: unset;
+        gap: 2em;
+    }
+
+    .checked_opinion{
+        min-width: 10em;
+        width: 80%;
+        gap: 10px;
+      }
+
+      .opinion_details{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        
+      }
+      .opinion_details div{
+        justify-self: flex-end;
+        align-self: center; 
+      }
+}

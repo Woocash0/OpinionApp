@@ -25,7 +25,7 @@ const useRefreshToken = () => {
             token,
             expiresIn: 3600,
             tokenType: 'Bearer',
-            authState: { token, refreshToken: newRefreshToken },
+            authState: { email:response.data.user.email, token, refreshToken: newRefreshToken, roles: response.data.user.roles },
           });
           toast.success("Session successfully restored", {
             className: 'react-hot-toast',

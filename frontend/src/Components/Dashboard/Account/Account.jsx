@@ -123,7 +123,7 @@ const Account = () => {
               <>
                 <div className="detail_container">
                   <div className="detail">{roles.map((role, index) => (
-                      <span key={index}>{extractRole(role)}</span>
+                      <span key={index}>{extractRole(role)}&nbsp;</span>
                   ))}</div>
                   <div className="detail_name">Role</div>
                 </div>

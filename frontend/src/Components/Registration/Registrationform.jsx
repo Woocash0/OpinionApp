@@ -101,10 +101,14 @@ function RegistrationForm() {
 
   };
 
+  const handleLogoClick = () => {
+    navigate('/', { replace: true });
+  };
+
   return (
     <div className="container">
       <div className="logo">
-        <img src={logo} alt="Logo" />
+        <img src={logo} alt="Logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }} />
       </div>
       <form onSubmit={handleSubmit} className="login">
         <div className="header_login">

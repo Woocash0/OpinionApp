@@ -88,7 +88,7 @@ class SecurityController extends AbstractController
                 'user' => [
                     'id' => $user->getId(),
                     'email' => $user->getUserIdentifier(),
-                    'role' => $user->getRoles(),
+                    'roles' => $user->getRoles(),
                     'name' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getName() : '',
                     'surname' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getSurname() : '',
                 ],
@@ -130,7 +130,13 @@ class SecurityController extends AbstractController
             return new JsonResponse([
                 'token' => $newToken,
                 'newRefreshToken' => $newRefreshToken,
-                'user' => $user
+                'user' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getUserIdentifier(),
+                    'roles' => $user->getRoles(),
+                    'name' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getName() : '',
+                    'surname' => $user->getIdUserDetails() ? $user->getIdUserDetails()->getSurname() : '',
+                ],
             ], 200);
         } catch (\Exception $e) {
             error_log("Error refreshing token: " . $e->getMessage());
