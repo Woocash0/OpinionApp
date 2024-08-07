@@ -80,7 +80,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
           try {
             const newAuthToken = await refreshToken();
             if (newAuthToken) {
-              // Ponów żądanie po odświeżeniu tokena
               const retryResponse = await axios.get('http://localhost:8000/account', {
                 headers: {
                   'Authorization': `Bearer ${newAuthToken}`
@@ -91,7 +90,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
             }
           } catch (refreshError) {
             console.error("Failed to refresh token:", refreshError);
-            // Obsłuż błąd odświeżania tokena, np. przekierowanie do logowania
           }
         } else {
           console.error('Error fetching user account:', error);
@@ -115,8 +113,6 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
         await axios.post('http://localhost:8000/add_opinion', {
           productId: productId,
           opinionText: opinion,
-          thumbsUp: 0,
-          thumbsDown: 0,
           createdBy: userDetails.id
         });
 
@@ -124,7 +120,7 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
           className: 'react-hot-toast',
         });
         setOpinion('');
-        window.location.reload(); // Refresh the page
+        window.location.reload();
       }
     } catch (error) {
       toast.error('Error adding opinion', {
@@ -139,14 +135,12 @@ const OpinionContainer = ({ existingOpinions, productId }) => {
       const bValue = b[sortCriterion];
       
       if (sortCriterion === 'createdAt') {
-        // Parse dates if sorting by date
         const aDate = new Date(aValue);
         const bDate = new Date(bValue);
         return sortOrder === 'asc' ? aDate - bDate : bDate - aDate;
       }
       
       if (sortCriterion === 'totalReactions') {
-        // Calculate total reactions with thumbsDown as negative
         const aTotal = (a.thumbsUp || 0) - (a.thumbsDown || 0);
         const bTotal = (b.thumbsUp || 0) - (b.thumbsDown || 0);
         return sortOrder === 'asc' ? aTotal - bTotal : bTotal - aTotal;

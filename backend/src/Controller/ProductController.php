@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Entity\Opinion;
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,13 +17,26 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-
-Use Sentiment\Analyzer;
+use App\Service\WarrantyNotificationService;
+use App\Service\TokenAuthenticator;
 
 
 
 class ProductController extends AbstractController
 {
+    private $tokenAuthenticator;
+    private $productRepository;
+    private $em;
+    private $warrantyNotificationService;
+
+    public function __construct(TokenAuthenticator $tokenAuthenticator, ProductRepository $productRepository, EntityManagerInterface $em, WarrantyNotificationService $warrantyNotificationService)
+    {
+        $this->tokenAuthenticator = $tokenAuthenticator;
+        $this->productRepository = $productRepository;
+        $this->em = $em;
+        $this->warrantyNotificationService = $warrantyNotificationService;
+    }
+
     #[Route('/products', name: 'get_products', methods: ['GET'])]
     public function getProducts(EntityManagerInterface $em): JsonResponse
     {
@@ -72,7 +86,6 @@ class ProductController extends AbstractController
         $data = $request->request->all();
         $file = $request->files->get('image');
 
-        // Jeśli nie wybrano obrazka, ustaw domyślną ścieżkę
         if($file){
             $newFileName = uniqid() . '.' . $file->guessExtension();
 
@@ -95,18 +108,15 @@ class ProductController extends AbstractController
             $data['image'] = 'no-image.svg';
         }
 
-       // Process category_id based on subsubcategory_id and subcategory_id
        if (!empty($data['subsubcategory_id'])) {
         $data['category_id'] = $data['subsubcategory_id'];
     } elseif (!empty($data['subcategory_id'])) {
         $data['category_id'] = $data['subcategory_id'];
     }
 
-    // Remove subsubcategory_id and subcategory_id from data
     unset($data['subsubcategory_id']);
     unset($data['subcategory_id']);
 
-    // Create new Product entity and set its properties
     $product = new Product();
     $product->setCategory($em->getRepository(Category::class)->find($data['category_id']));
     $product->setProductName($data['product_name']);
@@ -115,10 +125,8 @@ class ProductController extends AbstractController
     $product->setDescription($data['description']);
     $product->setImage($data['image']);
 
-    // Validate the Product entity
     $errors = $validator->validate($product);
 
-        // Walidacja danych
         $errors = $validator->validate($product);
         if (count($errors) > 0) {
             $errorMessages = [];
@@ -128,10 +136,86 @@ class ProductController extends AbstractController
             return new JsonResponse(['error' => "Form Validation Error"], Response::HTTP_BAD_REQUEST);
         }
 
-        // Dodanie produktu
         $em->persist($product);
         $em->flush();
 
         return new JsonResponse(['message' => 'Product added successfully'], Response::HTTP_CREATED);
+    }
+
+    #[Route('/unapproved', name: 'unapproved_products', methods: ['GET'])]
+    public function getUnapprovedProducts(Request $request)
+    {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $products = $this->productRepository->findUnapprovedProducts();
+        $data = [];
+
+        foreach ($products as $product) {
+            $data[] = [
+                'id' => $product->getId(),
+                'productName' => $product->getProductName(),
+                'image' => $product->getImage(),
+                'category' => $product->getCategory()->getCategoryName(),
+                'barcode' => $product->getBarcode(),
+                'producer' => $product->getProducer(),
+                'description' => $product->getDescription(),
+                'creator' => $product->getCreator()->getUserIdentifier(),
+            ];
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/product/approve/{id}', name: 'approve_product', methods: ['POST'])]
+    public function approveProduct(Request $request, int $id): Response
+    {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $product = $this->em->getRepository(Product::class)->find($id);
+        if (!$product) {
+            return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $product->setInspected(true);
+        $owner = $product->getCreator();
+        $this->warrantyNotificationService->sendEmailAboutProductApproved($owner, $product);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Product approved']);
+    }
+
+    #[Route('/product/disapprove/{id}', name: 'disapprove_product', methods: ['DELETE'])]
+    public function disapproveProduct(Request $request, int $id): Response
+    {
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!in_array("ROLE_MODERATOR", $user->getRoles())) {
+            return new JsonResponse(['error' => 'User unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+        
+        $product = $this->em->getRepository(Product::class)->find($id);
+        if (!$product) {
+            return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+        }
+        $owner = $product->getCreator();
+        $this->warrantyNotificationService->sendEmailAboutProductDisapproved($owner, $product);
+
+        //$this->em->remove($product);
+        //$this->em->flush();
+
+        return new JsonResponse(['message' => 'Product disapproved']);
     }
 }

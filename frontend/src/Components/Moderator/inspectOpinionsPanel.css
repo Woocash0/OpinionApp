@@ -102,9 +102,9 @@
     color: white;
     border: 2px solid white;
     border-radius: 25px;
-    width: 8em;
     letter-spacing: 3px;
     cursor: pointer;
+    width: fit-content;
 }
 
 .mod_button:hover{
@@ -123,12 +123,24 @@
     box-shadow: 0px 10px 30px rgba(255, 0, 0, 0.5); 
 }
 
+.no_uninspected{
+  color: white;
+  font-size: 1em;
+  text-align: center;
+  width: 100%;
+}
+
+.product-image{
+  width: 100%;
+  height: 15em;
+  object-fit: contain;
+}
+
 
 @media only screen and (max-device-width: 992px) {
     .mod_button{
         padding: 0.6em;
         border-radius: 25px;
-        width: 7em;
         height: 3em;
     }
 
@@ -136,6 +148,7 @@
         padding: 0.8em;
         width: 4em;
     }
+    
     .buttons_container_1{
         margin-top: 1em;
     }

@@ -283,7 +283,7 @@ function AddWarranty() {
                             onSuggestionSelected={onSuggestionSelected}
                         />
                         </span>
-                        <div className="detail_name"></div>
+                        <div className="detail_name">Product Name</div>
                     </div>
                     <div className="detail_container">
                         <input type="date" name="purchase_date" className="detail" value={formData.purchase_date} onChange={handleChange} placeholder="Purchase Date" />

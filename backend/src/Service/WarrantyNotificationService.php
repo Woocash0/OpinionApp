@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use DateTime;
 use App\Entity\User;
 use App\Entity\Opinion;
+use App\Entity\Product;
 use App\Entity\Warranty;
 use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
@@ -89,6 +89,96 @@ class WarrantyNotificationService
                 $opinion->getOpinionText(),
                 $now1
 
+            ));
+        $this->mailer->send($email);
+        error_log(print_r("[".$now->format('Y-m-d H:i:s') ,true)."] - An email to ". $user->getEmail()." was successfully sent");
+        }catch(\Exception $e){
+            error_log("Error while sending email - ". $e->getMessage());
+            error_log("Details: " . print_r($e, true));
+        }
+    }
+
+    public function sendEmailAboutReactionOpinionDelete(User $user, Opinion $opinion)
+    {
+        $now = new \DateTime();
+        $now1 = $now->format('Y-m-d');
+        try{
+            $email = (new Email())
+            ->from($this->fromEmail)
+            ->to($user->getEmail())
+            ->subject('Your product opinion has been deleted')
+            ->html(sprintf(
+                '<p>Hello %s,</p>
+                <p>Your opinion for the product <b>%s</b> in the category <b>%s</b> published on %s has been deleted due to excessive negative reactions.</p>
+                <p>Content of the opinion: <b>%s</b></p>
+                <p>Time of deletion: %s</p>
+                <p>Sincerely,</p>
+                <p>Moderation team of OpinionApp</p>',
+                $user->getIdUserDetails()->getName(),
+                $opinion->getProduct()->getProductName(),
+                $opinion->getProduct()->getCategory()->getCategoryName(),
+                $opinion->getCreatedAt()->format('Y-m-d H:i:s'),
+                $opinion->getOpinionText(),
+                $now1
+
+            ));
+        $this->mailer->send($email);
+        error_log(print_r("[".$now->format('Y-m-d H:i:s') ,true)."] - An email to ". $user->getEmail()." was successfully sent");
+        }catch(\Exception $e){
+            error_log("Error while sending email - ". $e->getMessage());
+            error_log("Details: " . print_r($e, true));
+        }
+    }
+
+    public function sendEmailAboutProductApproved(User $user, Product $product)
+    {
+        $now = new \DateTime();
+        $now1 = $now->format('Y-m-d');
+        try{
+            $email = (new Email())
+            ->from($this->fromEmail)
+            ->to($user->getEmail())
+            ->subject('Your product suggestion has been approved')
+            ->html(sprintf(
+                '<p>Hello %s,</p>
+                <p>Your suggestion for the product <b>%s</b> in the category <b>%s</b> has been approved and now is visible to all users.</p>
+                <p>Thank you for contributing to the improvement of our OpinionApp.</p>
+                <p>Time of approval: %s</p>
+                <p>Sincerely,</p>
+                <p>Moderation team of OpinionApp</p>',
+                $user->getIdUserDetails()->getName(),
+                $product->getProductName(),
+                $product->getCategory()->getCategoryName(),
+                $now1
+            ));
+        $this->mailer->send($email);
+        error_log(print_r("[".$now->format('Y-m-d H:i:s') ,true)."] - An email to ". $user->getEmail()." was successfully sent");
+        }catch(\Exception $e){
+            error_log("Error while sending email - ". $e->getMessage());
+            error_log("Details: " . print_r($e, true));
+        }
+    }
+
+    public function sendEmailAboutProductDisapproved(User $user, Product $product)
+    {
+        $now = new \DateTime();
+        $now1 = $now->format('Y-m-d');
+        try{
+            $email = (new Email())
+            ->from($this->fromEmail)
+            ->to($user->getEmail())
+            ->subject('Your product suggestion has been disapproved')
+            ->html(sprintf(
+                '<p>Hello %s,</p>
+                <p>Your suggestion for the product <b>%s</b> in the category <b>%s</b> has been disapproved by our moderation team.</p>
+                <p>Next time, we encourage you to make sure all the product information is correct and check if the product already exists in our application.</p>
+                <p>Time of disapproval: %s</p>
+                <p>Sincerely,</p>
+                <p>Moderation team of OpinionApp</p>',
+                $user->getIdUserDetails()->getName(),
+                $product->getProductName(),
+                $product->getCategory()->getCategoryName(),
+                $now1
             ));
         $this->mailer->send($email);
         error_log(print_r("[".$now->format('Y-m-d H:i:s') ,true)."] - An email to ". $user->getEmail()." was successfully sent");

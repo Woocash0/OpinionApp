@@ -7,6 +7,8 @@ const useRefreshToken = () => {
   const signOut = useSignOut();
   const auth = useAuthUser();
 
+  
+
   const refreshToken = () => {
     const user = auth();
     const oldRefreshToken = user?.refreshToken;

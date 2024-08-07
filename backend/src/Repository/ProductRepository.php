@@ -21,6 +21,14 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function findUnapprovedProducts()
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.inspected = false')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Product[] Returns an array of Product objects
 //     */

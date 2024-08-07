@@ -25,6 +25,7 @@
   margin: 1em 0 1em 0;
   width: 100%;
   max-width: 100%;
+  height: 4em;
 }
   
 .opinion-header{
@@ -92,7 +93,7 @@
 
 @media only screen and (max-device-width: 992px) {
   .opinion-container{
-    width: 10em;
+    width: 9em;
     padding: 0vw;
   }
 
@@ -137,7 +138,7 @@
 
 @media only screen and (max-device-width: 525px) {
   .opinion-container{
-    width: 8.5em;
+    width: 7.5em;
     padding: 0vw;
   }
   .inputOpinion{

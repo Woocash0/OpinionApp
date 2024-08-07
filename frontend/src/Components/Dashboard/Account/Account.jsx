@@ -49,6 +49,15 @@ const Account = () => {
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
+          toast.promise(
+            refreshToken(),
+             {
+               loading: 'Saving...',
+               success: <b>Settings saved!</b>,
+               error: <b>Could not save.</b>,
+             }, {
+              className: 'react-hot-toast',
+            });
           refreshToken()
             .then(newAuthToken => {
               if (newAuthToken) {

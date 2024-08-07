@@ -19,7 +19,8 @@ import "./Components/styles/style.css";
 import "./Components/styles/warranties.css";
 import "./Components/styles/account.css";
 import RoleProtectedRoute from './RoleProtectedRoute';
-import ModeratorPanel from './Components/Moderator/ModeratorPanel';
+import InspectOpinionsPanel from './Components/Moderator/InspectOpinionsPanel';
+import ApproveNewProducts from './Components/Moderator/ApproveNewProducts';
 
 function App() {
   return (
@@ -37,7 +38,8 @@ function App() {
       <Route path="/signinform" element={<LayoutWithoutNavbar><RegistrationForm /></LayoutWithoutNavbar>} />
 
       <Route element={<RoleProtectedRoute roles={['ROLE_MODERATOR']} />}>
-        <Route path="/moderator_panel" element={<LayoutWithNavbar><ModeratorPanel /></LayoutWithNavbar>} />
+        <Route path="/inspect_opinions" element={<LayoutWithNavbar><InspectOpinionsPanel/></LayoutWithNavbar>} />
+        <Route path="/approve_products" element={<LayoutWithNavbar><ApproveNewProducts/></LayoutWithNavbar>} />
       </Route>
 
       <Route path="/unauthorized" element={<LayoutWithNavbar><Unauthorized /></LayoutWithNavbar>} />

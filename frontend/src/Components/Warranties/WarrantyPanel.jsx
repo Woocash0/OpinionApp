@@ -83,7 +83,6 @@ const WarrantyPanel = ({ selectedWarranty, onClose }) => {
       <div className="warranty-popup-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         <div className='productHeader'>
             <header className='product-header-one'>Remaining warranty:</header>
-            <header className='product-header-two'>{selectedWarranty.category}</header>   
         </div>
         <div className="productInfo" style={{ display: 'flex' }}>
           <div id="clock">

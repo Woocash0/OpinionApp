@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
-use Symfony\Component\HttpFoundation\Request;
 
 class TokenAuthenticator
 {
@@ -39,7 +41,7 @@ class TokenAuthenticator
             }
             return $user;
         } catch (JWTDecodeFailureException $e) {
-            throw new BadCredentialsException('Invalid JWT token.');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid JWT token.');
         }
     }
 }

@@ -26,7 +26,7 @@ section {
   display: flex;
   /*grid-template-columns: repeat(5, 1fr);*/
   grid-gap: 1em;
-  margin: 0em 8em 0em 3em;
+  margin: 0em 2em 0em 2em;
   overflow: auto;
   padding: 25px 25px 0px 25px;
   flex-wrap: wrap;
@@ -90,7 +90,7 @@ section {
   display: flex;
   border: 4px solid white;
   border-radius: 40px;
-  height:min-content;
+  height: 75px;
   margin: 1em 1em 0 0;
 }
 .add_product_button{
@@ -316,6 +316,13 @@ section {
     width: 100%;
   }
 
+  .add_product_button{
+    height: 65px;
+  }
+  #search_button svg{
+    height: 25px;
+  }
+
   nav {
     width: 100%;
     height: 10vh;
@@ -365,6 +372,7 @@ section {
   .search_add{
     align-items: center;
     margin: 0.5em 0.5em 0 0;
+    height: 60px;
   }
 
   section {
@@ -413,12 +421,12 @@ section {
   .warranty-popup-panel, 
   .product-popup-panel {
     flex-direction: column;
-    width: 10em;
+    width: 9em;
   }
 
   #clock {
-    height: 10em;
-    width: 10em;
+    height: 9em;
+    width: 9em;
   }
 
   .edit,
@@ -458,8 +466,8 @@ section {
 
   
   #info {
-    height: 10em;
-    width: 10em;
+    height: 9em;
+    width: 9em;
   }
   #info .detail {
     border-radius: 18px;
@@ -478,17 +486,17 @@ section {
   .warranty-popup-panel, 
   .product-popup-panel {
     flex-direction: column;
-    width: 8.5em;
+    width: 7.5em;
   }
 
   #clock {
-    height: 8.5em;
-    width: 8.5em;
+    height: 7.5em;
+    width: 7.5em;
   }
 
   #info {
-    height: 8.5em;
-    width: 8.5em;
+    height: 7.5em;
+    width: 7.5em;
   }
 
   #info .detail {

@@ -74,7 +74,6 @@ form.login {
   flex-direction: column;
   justify-content: center;
   width: 35%;
-  height: 50%;
   margin-bottom: 3%;
 }
 input::placeholder {
@@ -99,11 +98,14 @@ input, select, textarea {
     inset 0px 4px 8px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
   border: none;
-  line-height: 4.5em;
   letter-spacing: 0.25em;
   font-family: "Inter";
   text-align: center;
   max-width: 40em;
+}
+
+form.login input{
+  height: 4em;
 }
 
 
@@ -149,6 +151,10 @@ form.login > #signup:hover {
   outline: none;
 }
 
+.clear_button {
+  display: none;
+}
+
 @media only screen and (max-device-width: 992px) {
   .container {
     flex-direction: column;
@@ -166,6 +172,9 @@ form.login > #signup:hover {
   form.login {
     width: 95%;
     max-width: 10em;
+    justify-content: flex-start;
+    height: unset;
+    overflow: auto;
   }
   body {
     font-size: 48px;
@@ -186,6 +195,7 @@ form.login > #signup:hover {
     line-height: 4em;
   }
 
+
   #searchbar {
     position: fixed;
     top: 10%;
@@ -195,6 +205,17 @@ form.login > #signup:hover {
     font-size: 16px;
     margin: 0;
     border: #076478 4px solid;
+  }
+
+  .clear_button {
+    display: block;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(+200%, -23%);
+    height: 4em ;
+    font-size: 16px;
+    margin: 0;
   }
 }
 

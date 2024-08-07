@@ -43,6 +43,12 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Warranty::class, orphanRemoval: true)]
     private Collection $warranties;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $inspected = null;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?User $creator = null;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
@@ -182,6 +188,30 @@ class Product
                 $warranty->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isInspected(): ?bool
+    {
+        return $this->inspected;
+    }
+
+    public function setInspected(?bool $inspected): static
+    {
+        $this->inspected = $inspected;
+
+        return $this;
+    }
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): static
+    {
+        $this->creator = $creator;
 
         return $this;
     }

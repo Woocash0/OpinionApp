@@ -37,6 +37,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown, userR
       if (response.data.success) {
         setThumbsUp(thumbsUp + 1);
         setUserReaction('up');
+        toast.success("Thank you for your reaction", {
+          className: 'react-hot-toast',
+        });
       }
     } catch (error) {
       console.error('Error updating thumbs up');
@@ -74,6 +77,9 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown, userR
       if (response.data.success) {
         setThumbsDown(thumbsDown + 1);
         setUserReaction('down');
+        toast.success("Thank you for your reaction", {
+          className: 'react-hot-toast',
+        });
       }
     } catch (error) {
       console.error('Error updating thumbs down');

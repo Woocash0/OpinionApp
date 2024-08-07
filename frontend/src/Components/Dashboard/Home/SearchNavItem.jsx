@@ -32,8 +32,8 @@ const SearchNavItem = ({ products, onSearchResults, onClearSearch, onShowSearch 
   const handleSearchClick = (event) => {
     event.preventDefault();
     if (searchVisible) {
-      setSearchTerm(''); // Clear search term when closing search
-      onClearSearch();  // Clear search results when closing search
+      setSearchTerm(''); 
+      onClearSearch(); 
     }else{
       onShowSearch();
     }
@@ -45,6 +45,7 @@ const SearchNavItem = ({ products, onSearchResults, onClearSearch, onShowSearch 
   return (
     <div id="search_block">
       {searchVisible && (
+        <>
         <input
           id="searchbar"
           type="text"
@@ -56,6 +57,10 @@ const SearchNavItem = ({ products, onSearchResults, onClearSearch, onShowSearch 
           }}
           ref={searchInputRef}
         />
+        <a href="#" className="clear_button" onClick={handleSearchClick}>
+          <FontAwesomeIcon icon={faTimes} className="steady" style={{color: "teal"}} />
+        </a>
+        </>
       )}
       <a href="#" className="button" id="search_button" onClick={handleSearchClick}>
         <FontAwesomeIcon icon={searchVisible ? faTimes : faMagnifyingGlass} className="steady" />

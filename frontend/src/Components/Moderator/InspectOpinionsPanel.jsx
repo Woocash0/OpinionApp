@@ -1,34 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import "./moderatorPanel.css";
+import "./inspectOpinionsPanel.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useSignOut } from 'react-auth-kit';
+import Loading from '../Loading';
+import useRefreshToken from '../../hooks/useRefreshToken';
 
 
-const ModeratorPanel = () => {
+const InspectOpinionsPanel = () => {
     const [opinions, setOpinions] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [remainingCount, setRemainingCount] = useState(0);
+    const signOut = useSignOut();
+    const navigate = useNavigate();
+    const refreshToken = useRefreshToken(); 
+    const [loading, setLoading] = useState(true);
 
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
     const authToken = cookies.find(cookie => cookie[0] === '_auth');
 
     useEffect(() => {
-        const fetchOpinions = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/uninspected', {
-                    headers: {
-                      'Authorization': `Bearer ${authToken[1]}`
-                    }
-                  });
-                setOpinions(response.data);
-                setRemainingCount(response.data.length);
-            } catch (error) {
-                console.error('Error fetching opinions:', error);
+        const fetchUninspectedOpinions = async () => {
+            const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+            const authToken = cookies.find(cookie => cookie[0] === '_auth');
+          
+            if (!authToken) {
+              console.error('No auth token found');
+              navigate('/loginform');
+              toast.error('Authentication token missing. Please log in again.', {
+                className: 'react-hot-toast',
+              });
+              setLoading(false);
+              return;
             }
-        };
-        fetchOpinions();
+          
+            try {
+              const response = await axios.get('http://localhost:8000/uninspected', {
+                headers: {
+                  'Authorization': `Bearer ${authToken[1]}`
+                }
+              });
+              setOpinions(response.data);
+              setRemainingCount(response.data.length);
+            } catch (error) {
+              if (error.response && error.response.status === 401) {
+                console.log("Token expired or invalid. Attempting to refresh.");
+                try {
+                  const newAuthToken = await refreshToken();
+                  if (newAuthToken) {
+                    const retryResponse = await axios.get('http://localhost:8000/uninspected', {
+                      headers: {
+                        'Authorization': `Bearer ${newAuthToken}`
+                      }
+                    });
+                    setOpinions(retryResponse.data);
+                    setRemainingCount(retryResponse.data.length);
+                  }
+                } catch (refreshError) {
+                  toast.error("Session expired. Please log in again.", {
+                    className: 'react-hot-toast',
+                  });
+                  signOut();
+                  navigate('/loginform');
+                }
+              } else {
+                toast.error("Error fetching opinions", error.response?.data?.message || 'An error occurred', {
+                  className: 'react-hot-toast',
+                });
+                setOpinions([]);
+              }
+            } finally {
+              setLoading(false);
+            }
+          };
+          
+          fetchUninspectedOpinions();
     }, []);
 
     const handleAccept = async () => {
@@ -60,7 +109,7 @@ const ModeratorPanel = () => {
         const opinionId = opinions[currentIndex].id;
 
         try {
-            await axios.post(`http://localhost:8000/inspect/delete/${opinionId}`, {}, {
+            await axios.delete(`http://localhost:8000/inspect/delete/${opinionId}`, {
                 headers: {
                   'Authorization': `Bearer ${authToken[1]}`
                 }
@@ -90,6 +139,10 @@ const ModeratorPanel = () => {
             setCurrentIndex(currentIndex - 1);
         }
     };
+
+    if (loading) {
+        return <Loading />; 
+    }
 
     return (
         <div>
@@ -127,10 +180,10 @@ const ModeratorPanel = () => {
                     </div>
                 </div>
             ) : (
-                <p>No uninspected opinions left.</p>
+                <p className='no_uninspected'>No uninspected opinions left.</p>
             )}
         </div>
     );
 };
 
-export default ModeratorPanel;
+export default InspectOpinionsPanel;

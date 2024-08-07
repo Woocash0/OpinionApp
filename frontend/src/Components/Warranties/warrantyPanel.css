@@ -60,6 +60,32 @@
 
 @media only screen and (max-device-width: 992px) {
 
+  .warranty-popup-panel {
+    transform: translate(-50%, -50%);
+    font-size: 0.8em;
+  }
+
+
+  .warranty-popup-panel #clock div svg {
+    height: 25px;
+  }
+
+  .warranty-popup-panel header {
+    font-size: 0.6em;
+  }
+
+  .warranty-popup-panel #info {
+    height: 10em;
+  }
+  
+  .warranty-popup-panel #info .detail_container {
+    height: 16%;
+  }
+
+  .warranty-popup-panel #info .detail_container .detail_name {
+    font-size: 0.3em;
+  }
+
   #elipse {
     border: 12px solid #261132;
   }
@@ -77,5 +103,9 @@
   }
   #elipse .timebox {
     font-size: 0.4em;
+  }
+
+  .warranty-popup-panel #info .detail_container .detail_name {
+    font-size: 0.25em;
   }
 }
