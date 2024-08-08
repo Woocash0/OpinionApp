@@ -40,7 +40,7 @@ class ProductController extends AbstractController
     #[Route('/products', name: 'get_products', methods: ['GET'])]
     public function getProducts(EntityManagerInterface $em): JsonResponse
     {
-        $products = $em->getRepository(Product::class)->findAll();
+        $products = $em->getRepository(Product::class)->findBy(['inspected' => true]);
     
         $productData = [];
 
@@ -83,7 +83,14 @@ class ProductController extends AbstractController
     #[Route('/add_product', name: 'add_product', methods: ['POST'])]
     public function addProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
+        
         $data = $request->request->all();
+
+        $user = $this->tokenAuthenticator->authenticateToken($request);
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+        
         $file = $request->files->get('image');
 
         if($file){
@@ -124,6 +131,8 @@ class ProductController extends AbstractController
     $product->setBarcode($data['barcode']);
     $product->setDescription($data['description']);
     $product->setImage($data['image']);
+    $product->setInspected(false);
+    $product->setCreator($user);
 
     $errors = $validator->validate($product);
 

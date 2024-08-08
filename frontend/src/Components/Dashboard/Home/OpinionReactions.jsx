@@ -8,14 +8,14 @@ import { toast } from "react-hot-toast";
 const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown, userReacted }) => {
   const [thumbsUp, setThumbsUp] = useState(initialThumbsUp);
   const [thumbsDown, setThumbsDown] = useState(initialThumbsDown);
-  const [userReaction, setUserReaction] = useState(null); // 'up' or 'down'
+  const [userReaction, setUserReaction] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
   const authToken = cookies.find(cookie => cookie[0] === '_auth');
 
   const handleThumbsUp = async () => {
-    if (userReaction || loading) return; // User has already reacted or request in progress
+    if (userReaction || loading) return;
 
     if(!authToken){
       toast.error("Login to react to an opinion", {
@@ -54,7 +54,7 @@ const OpinionReactions = ({ opinionId, initialThumbsUp, initialThumbsDown, userR
   };
 
   const handleThumbsDown = async () => {
-    if (userReaction || loading) return; // User has already reacted or request in progress
+    if (userReaction || loading) return;
 
     if(!authToken){
       toast.error("Login to react to an opinion", {

@@ -1,0 +1,24 @@
+.unauth_panel{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    color: white;
+    letter-spacing: 3px;
+    line-height: 2;
+}
+
+@media only screen and (max-device-width: 992px) {
+    .unauth_panel{
+        font-size: 0.3em;
+        letter-spacing: 2px;
+        line-height: 2;
+    }
+
+    .unauth_panel p{
+        width: 90%;
+        text-align: center;
+    }
+
+}

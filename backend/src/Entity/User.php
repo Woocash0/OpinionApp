@@ -47,12 +47,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\OneToMany(mappedBy: 'appuser', targetEntity: Login::class, orphanRemoval: true)]
+    private Collection $logins;
+
     public function __construct()
     {
         $this->opinions = new ArrayCollection();
         $this->userOpinionReactions = new ArrayCollection();
         $this->refreshTokens = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->logins = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -249,6 +253,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($product->getCreator() === $this) {
                 $product->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Login>
+     */
+    public function getLogins(): Collection
+    {
+        return $this->logins;
+    }
+
+    public function addLogin(Login $login): static
+    {
+        if (!$this->logins->contains($login)) {
+            $this->logins->add($login);
+            $login->setAppuser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLogin(Login $login): static
+    {
+        if ($this->logins->removeElement($login)) {
+            // set the owning side to null (unless already changed)
+            if ($login->getAppuser() === $this) {
+                $login->setAppuser(null);
             }
         }
 

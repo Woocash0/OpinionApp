@@ -1,0 +1,29 @@
+.admin_container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    letter-spacing: 3px;
+}
+
+.chart{
+    max-height: 25em;
+    width: 100%;
+    max-width: 50em;
+    margin-bottom: 1em;
+    padding-bottom: 3em !important;
+}
+.chart div{
+    padding: 0 !important;
+    margin-top: 1em !important;
+    
+}
+
+@media only screen and (max-device-width: 992px) {
+    .admin_container{
+        font-size: 0.3em;
+        letter-spacing: 2px;
+    }
+}

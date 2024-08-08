@@ -19,20 +19,21 @@ const Home = () => {
     <>
       <CategoryTree onSelectCategory={setSelectedCategory} onSelectCategoryName={setSelectedCategoryName}/>
       <Routes>
-          <Route path="/" element={
-            <Products 
-              onSelectProduct={handleProductSelect} 
-              selectedCategory={selectedCategory} 
-              selectedCategoryName={selectedCategoryName} 
-            />
-          } />
-          <Route path="ranking" element={
+          <Route path="/ranking" element={
             <Ranking 
               onSelectProduct={handleProductSelect} 
               selectedCategory={selectedCategory} 
               selectedCategoryName={selectedCategoryName} 
             />
           } />
+          <Route path="/*" element={
+            <Products 
+              onSelectProduct={handleProductSelect} 
+              selectedCategory={selectedCategory} 
+              selectedCategoryName={selectedCategoryName} 
+            />
+          } />
+          
         </Routes>
       <ProductPanel selectedProduct={selectedProduct} onClose={() => setSelectedProduct(null)}/>
     </>

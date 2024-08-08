@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Opinion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
 /**
  * @extends ServiceEntityRepository<Opinion>
  *
@@ -20,13 +19,30 @@ class OpinionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Opinion::class);
     }
-    
+
     public function findUninspectedOpinions()
     {
         return $this->createQueryBuilder('o')
             ->where('o.inspected = false')
             ->getQuery()
             ->getResult();
+    }
+
+    public function getOpinionsByMonthAndYear()
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+        SELECT 
+            TO_CHAR(o.created_at, \'YYYY-MM\') AS year_month,
+            COUNT(o.id) AS opinions
+        FROM opinion o
+        GROUP BY TO_CHAR(o.created_at, \'YYYY-MM\')
+        ORDER BY year_month
+        ';
+
+        $stmt = $conn->executeQuery($sql);
+        return $stmt->fetchAllAssociative();
     }
 
 //    /**

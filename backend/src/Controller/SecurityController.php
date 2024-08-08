@@ -2,23 +2,24 @@
 
 namespace App\Controller;
 
-use Ramsey\Uuid\Uuid;
 use App\Entity\User;
+use App\Entity\Login;
+use Ramsey\Uuid\Uuid;
+use App\Entity\RefreshToken;
 use App\Repository\UserRepository;
+use App\Service\TokenAuthenticator;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\RefreshTokenRepository;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use App\Entity\RefreshToken;
-use App\Repository\RefreshTokenRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Service\TokenAuthenticator;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class SecurityController extends AbstractController
 {
@@ -78,9 +79,14 @@ class SecurityController extends AbstractController
             $refreshTokenEntity->setToken($refreshToken);
             $refreshTokenEntity->setAssociatedUser($user);
             $this->em->persist($refreshTokenEntity);
+
+            $logLogin = new Login();
+            $logLogin->setLoginDate(new \DateTime());
+            $logLogin-> setAppuser($user);
+            $this->em->persist($logLogin);
+            
             $this->em->flush();
 
-            // Send the refresh token in the response body, not in a cookie
             return new JsonResponse([
                 'message' => 'Login successful',
                 'token' => $jwtToken,

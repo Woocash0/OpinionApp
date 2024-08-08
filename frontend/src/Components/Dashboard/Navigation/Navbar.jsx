@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoxArchive, faUser, faTags, faRankingStar, faUserShield, faSignInAlt, faUserPlus, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
+import { faChartArea, faBoxArchive, faUser, faTags, faRankingStar, faSignInAlt, faUserPlus, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../images/logo_color.svg';
 import { useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
@@ -33,6 +33,16 @@ const Navbar = () => {
         {userRoles.includes('ROLE_MODERATOR') && (
           <>
             <NavItem icon={faTags} link="/" text="Products" />
+            <NavItem icon={faEye} link="/inspect_opinions" text="Inspect opinions" />
+            <NavItem icon={faClipboardCheck} link="/approve_products" text="Product approval" />
+            <NavItem icon={faUser} link="/account" text="My account" />
+          </>
+        )}
+
+        {userRoles.includes('ROLE_ADMIN') && (
+          <>
+            <NavItem icon={faTags} link="/" text="Products" />
+            <NavItem icon={faChartArea} link="/admin" text="Admin Panel" />
             <NavItem icon={faEye} link="/inspect_opinions" text="Inspect opinions" />
             <NavItem icon={faClipboardCheck} link="/approve_products" text="Product approval" />
             <NavItem icon={faUser} link="/account" text="My account" />
